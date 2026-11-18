@@ -89,7 +89,6 @@ CineCase <span class="text-amber-400">CS:2</span>
 <p class="text-[11px] text-slate-400 hidden sm:block">Film- & Serien-Roulette für euren Abend</p>
 </div>
 </button>
-<!-- API Status Check Button -->
 <button onclick="openApiStatusModal()" id="apiStatusBtn" class="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-[#131822] border border-slate-700/80 hover:border-amber-500/50 text-xs font-semibold text-slate-200 transition active:scale-95 shadow-sm">
 <span id="apiStatusDot" class="w-2.5 h-2.5 rounded-full bg-slate-400"></span>
 <span id="apiStatusText">API prüfen...</span>
@@ -130,7 +129,10 @@ CineCase <span class="text-amber-400">CS:2</span>
 <span id="crumbSep2" class="hidden">/</span>
 <span id="crumbCategory" class="hidden font-semibold text-amber-400">Action</span>
 </div>
+<div class="flex items-center gap-3">
+<button onclick="shuffleCurrentPool()" class="text-xs text-amber-400 hover:text-amber-300 bg-amber-500/10 border border-amber-500/30 px-2.5 py-1 rounded-lg transition active:scale-95">🎲 Pool shufflen</button>
 <div id="poolCounter" class="text-xs text-slate-400 bg-slate-800/70 px-2.5 py-1 rounded-lg">Verfügbar: <span class="text-white font-bold">0</span></div>
+</div>
 </div>
 </div>
 <!-- Main -->
@@ -204,9 +206,12 @@ CineCase <span class="text-amber-400">CS:2</span>
 <div class="absolute top-0 bottom-0 left-1/2 -translate-x-1/2 w-[3px] bg-gradient-to-b from-amber-400 via-red-500 to-amber-400 z-20 needle-glow pointer-events-none"></div>
 <div id="rouletteTrack" class="absolute top-0 bottom-0 left-0 flex items-center gap-3 px-4 will-change-transform"></div>
 </div>
-<div class="mt-5 flex justify-center">
-<button id="spinBtn" onclick="startSpin()" class="w-full sm:w-auto px-8 py-4 rounded-2xl bg-gradient-to-r from-emerald-500 via-green-500 to-teal-500 text-slate-950 font-display font-extrabold text-xl uppercase shadow-lg shadow-emerald-500/25">
+<div class="mt-5 flex flex-wrap items-center justify-center gap-3">
+<button id="spinBtn" onclick="startSpin()" class="flex-grow sm:flex-grow-0 px-8 py-4 rounded-2xl bg-gradient-to-r from-emerald-500 via-green-500 to-teal-500 text-slate-950 font-display font-extrabold text-xl uppercase shadow-lg shadow-emerald-500/25">
 <span id="spinBtnText">Case öffnen (Spin starten)</span>
+</button>
+<button onclick="shuffleCurrentPool()" class="px-5 py-4 rounded-2xl bg-[#1a2130] border border-slate-700 text-slate-200 font-bold text-sm hover:border-amber-400 transition flex items-center gap-2">
+<span>🎲</span> Shufflen
 </button>
 </div>
 </div>
@@ -260,8 +265,8 @@ CineCase <span class="text-amber-400">CS:2</span>
 </div>
 <div class="text-xs text-slate-300 space-y-2 bg-[#0b0e14] p-3.5 rounded-xl border border-slate-800">
 <p><strong>Wie funktioniert das?</strong></p>
-<p>• <strong>LIVE TMDB:</strong> Die App ruft aktuelle Daten & Poster direkt über deinen API-Key ab.</p>
-<p>• <strong>Datenbank offline:</strong> Falls kein Key hinterlegt ist oder die API blockiert, nutzt die App automatisch die riesige lokale Offline-Datenbank, damit du ohne Unterbrechung weiterspielen kannst.</p>
+<p>• <strong>LIVE TMDB:</strong> Die App ruft aktuelle Daten (mit europäischem Region-Filter) direkt über deinen API-Key ab.</p>
+<p>• <strong>Datenbank offline:</strong> Falls kein Key hinterlegt ist oder die API blockiert, nutzt die App automatisch die riesige lokale Offline-Datenbank.</p>
 </div>
 </div>
 <button onclick="closeApiStatusModal()" class="w-full py-3 rounded-xl bg-amber-500 text-slate-950 font-bold text-sm">Verstanden</button>
@@ -301,7 +306,7 @@ CineCase <span class="text-amber-400">CS:2</span>
 <div class="pt-4 border-t border-slate-800 space-y-3">
 <label class="text-sm font-bold text-white">Sync-Code</label>
 <div class="flex gap-2">
-<input type="text" id="syncCodeField" class="flex-grow bg-[#0b0e14] border border-slate-700 rounded-xl px-3.5 py-2 text-xs text-slate-300 font-mono">
+<input type="text" id="syncCodeField" class="flex-grow bg-[#0b0e14] border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-300 font-mono">
 <button onclick="copySyncCode()" class="px-3 py-2 rounded-xl bg-slate-800 text-white text-xs">Kopieren</button>
 <button onclick="importSyncCode()" class="px-3 py-2 rounded-xl bg-blue-600 text-white text-xs">Laden</button>
 </div>
@@ -311,6 +316,7 @@ CineCase <span class="text-amber-400">CS:2</span>
 <div id="toastContainer" class="fixed bottom-5 left-1/2 -translate-x-1/2 z-50 flex flex-col items-center gap-2 pointer-events-none"></div>
 <script>
 const CATEGORIES = [
+{ id: 'top', name: 'Die beliebtesten', icon: '🏆', desc: 'Die absoluten Top-Titel mit höchster Bewertung & Popularität.', genreId: 'top' },
 { id: 'all', name: 'Beliebt / Mix', icon: '🎲', desc: 'Die besten Highlights quer durch alle Genres.', genreId: null },
 { id: 'action', name: 'Action & Abenteuer', icon: '💥', desc: 'Adrenalin und Verfolgungsjagden.', genreId: { movie: '28', tv: '10759' } },
 { id: 'comedy', name: 'Komödie', icon: '😂', desc: 'Zum Abschalten und Lachen.', genreId: { movie: '35', tv: '35' } },
@@ -323,50 +329,37 @@ const CATEGORIES = [
 ];
 
 const FALLBACK_DATABASE = [
-{ id: 101, type: 'movie', cat: 'action', title: 'Mad Max: Fury Road', year: '2015', rating: 8.1, poster_path: null, emoji: '🔥', vibe: 'Adrenalin', overview: 'Postapokalyptische Verfolgungsjagd.' },
-{ id: 102, type: 'movie', cat: 'action', title: 'John Wick', year: '2014', rating: 7.4, poster_path: null, emoji: '🔫', vibe: 'Stylish', overview: 'Ex-Auftragskiller auf Rachefeldzug.' },
-{ id: 103, type: 'movie', cat: 'action', title: 'The Dark Knight', year: '2008', rating: 9.0, poster_path: null, emoji: '🦇', vibe: 'Meisterwerk', overview: 'Batman gegen den Joker.' },
-{ id: 104, type: 'movie', cat: 'action', title: 'Gladiator', year: '2000', rating: 8.5, poster_path: null, emoji: '🛡️', vibe: 'Episch', overview: 'Römischer Feldherr in der Arena.' },
+{ id: 101, type: 'movie', cat: 'top', title: 'The Dark Knight', year: '2008', rating: 9.0, poster_path: null, emoji: '🦇', vibe: 'Meisterwerk', overview: 'Batman gegen den Joker.' },
+{ id: 102, type: 'movie', cat: 'top', title: 'Inception', year: '2010', rating: 8.8, poster_path: null, emoji: '🌀', vibe: 'Mind-Bending', overview: 'Diebstahl von Geheimnissen im Traum.' },
+{ id: 103, type: 'movie', cat: 'action', title: 'Mad Max: Fury Road', year: '2015', rating: 8.1, poster_path: null, emoji: '🔥', vibe: 'Adrenalin', overview: 'Postapokalyptische Verfolgungsjagd.' },
+{ id: 104, type: 'movie', cat: 'action', title: 'John Wick', year: '2014', rating: 7.4, poster_path: null, emoji: '🔫', vibe: 'Stylish', overview: 'Ex-Auftragskiller auf Rachefeldzug.' },
 { id: 105, type: 'movie', cat: 'comedy', title: 'Ziemlich beste Freunde', year: '2011', rating: 8.5, poster_path: null, emoji: '🤝', vibe: 'Herzerwärmend', overview: 'Zwei Welten treffen aufeinander.' },
 { id: 106, type: 'movie', cat: 'comedy', title: 'Hangover', year: '2009', rating: 7.7, poster_path: null, emoji: '🍻', vibe: 'Chaotisch', overview: 'Junggesellenabschied in Las Vegas.' },
-{ id: 107, type: 'movie', cat: 'comedy', title: 'Superbad', year: '2007', rating: 7.6, poster_path: null, emoji: '🎉', vibe: 'Kult-Komödie', overview: 'Drei Highschool-Schüler vor einer Party.' },
-{ id: 108, type: 'movie', cat: 'scifi', title: 'Interstellar', year: '2014', rating: 8.7, poster_path: null, emoji: '🌌', vibe: 'Episch', overview: 'Reise durch ein Wurmloch im All.' },
-{ id: 109, type: 'movie', cat: 'scifi', title: 'Matrix', year: '1999', rating: 8.7, poster_path: null, emoji: '💊', vibe: 'Legendär', overview: 'Entdeckung der simulierten Realität.' },
-{ id: 110, type: 'movie', cat: 'scifi', title: 'Inception', year: '2010', rating: 8.8, poster_path: null, emoji: '🌀', vibe: 'Mind-Bending', overview: 'Diebstahl von Geheimnissen im Traum.' },
-{ id: 111, type: 'movie', cat: 'thriller', title: 'Sieben', year: '1995', rating: 8.6, poster_path: null, emoji: '📦', vibe: 'Düster & Packend', overview: 'Jagd auf Serienmörder.' },
-{ id: 112, type: 'movie', cat: 'thriller', title: 'Shutter Island', year: '2010', rating: 8.2, poster_path: null, emoji: '🧩', vibe: 'Mystery', overview: 'Ermittlungen in einer Anstalt.' },
-{ id: 113, type: 'movie', cat: 'horror', title: 'Conjuring', year: '2013', rating: 7.5, poster_path: null, emoji: '👻', vibe: 'Gruselig', overview: 'Paranormale Ermittlungen.' },
-{ id: 114, type: 'movie', cat: 'horror', title: 'Es', year: '2017', rating: 7.3, poster_path: null, emoji: '🎈', vibe: 'Spannend', overview: 'Kinder kämpfen gegen ein Wesen.' },
-{ id: 115, type: 'movie', cat: 'drama', title: 'Fight Club', year: '1999', rating: 8.8, poster_path: null, emoji: '🧼', vibe: 'Kult', overview: 'Gründung eines Untergrund-Clubs.' },
-{ id: 116, type: 'movie', cat: 'drama', title: 'Forrest Gump', year: '1994', rating: 8.8, poster_path: null, emoji: '🪶', vibe: 'Emotional', overview: 'Das bewegte Leben eines Mannes.' },
-{ id: 117, type: 'movie', cat: 'romance', title: 'La La Land', year: '2016', rating: 8.0, poster_path: null, emoji: '🎷', vibe: 'Musikalisch', overview: 'Liebe und Träume in Los Angeles.' },
-{ id: 118, type: 'movie', cat: 'animation', title: 'Spirited Away', year: '2001', rating: 8.6, poster_path: null, emoji: '🐉', vibe: 'Magisch', overview: 'Geheimnisvolle Geisterwelt.' },
+{ id: 107, type: 'movie', cat: 'scifi', title: 'Interstellar', year: '2014', rating: 8.7, poster_path: null, emoji: '🌌', vibe: 'Episch', overview: 'Reise durch ein Wurmloch im All.' },
+{ id: 108, type: 'movie', cat: 'scifi', title: 'Matrix', year: '1999', rating: 8.7, poster_path: null, emoji: '💊', vibe: 'Legendär', overview: 'Entdeckung der simulierten Realität.' },
+{ id: 109, type: 'movie', cat: 'thriller', title: 'Sieben', year: '1995', rating: 8.6, poster_path: null, emoji: '📦', vibe: 'Düster & Packend', overview: 'Jagd auf Serienmörder.' },
+{ id: 110, type: 'movie', cat: 'horror', title: 'Conjuring', year: '2013', rating: 7.5, poster_path: null, emoji: '👻', vibe: 'Gruselig', overview: 'Paranormale Ermittlungen.' },
+{ id: 111, type: 'movie', cat: 'drama', title: 'Fight Club', year: '1999', rating: 8.8, poster_path: null, emoji: '🧼', vibe: 'Kult', overview: 'Gründung eines Untergrund-Clubs.' },
+{ id: 112, type: 'movie', cat: 'romance', title: 'La La Land', year: '2016', rating: 8.0, poster_path: null, emoji: '🎷', vibe: 'Musikalisch', overview: 'Liebe und Träume in Los Angeles.' },
+{ id: 113, type: 'movie', cat: 'animation', title: 'Spirited Away', year: '2001', rating: 8.6, poster_path: null, emoji: '🐉', vibe: 'Magisch', overview: 'Geheimnisvolle Geisterwelt.' },
 
 // Serien
-{ id: 201, type: 'tv', cat: 'all', title: 'Breaking Bad', year: '2008', rating: 9.5, poster_path: null, emoji: '🧪', vibe: 'Meisterwerk', overview: 'Chemie-Lehrer wird zum Drogenboss.' },
-{ id: 202, type: 'tv', cat: 'all', title: 'Stranger Things', year: '2016', rating: 8.7, poster_path: null, emoji: '🚲', vibe: '80er Nostalgie', overview: 'Geheimnisvolle Vorkommnisse in Hawkins.' },
-{ id: 203, type: 'tv', cat: 'all', title: 'Game of Thrones', year: '2011', rating: 9.2, poster_path: null, emoji: '👑', vibe: 'Episch', overview: 'Kampf um den Eisernen Thron.' },
+{ id: 201, type: 'tv', cat: 'top', title: 'Breaking Bad', year: '2008', rating: 9.5, poster_path: null, emoji: '🧪', vibe: 'Meisterwerk', overview: 'Chemie-Lehrer wird zum Drogenboss.' },
+{ id: 202, type: 'tv', cat: 'top', title: 'Game of Thrones', year: '2011', rating: 9.2, poster_path: null, emoji: '👑', vibe: 'Episch', overview: 'Kampf um den Eisernen Thron.' },
+{ id: 203, type: 'tv', cat: 'all', title: 'Stranger Things', year: '2016', rating: 8.7, poster_path: null, emoji: '🚲', vibe: '80er Nostalgie', overview: 'Geheimnisvolle Vorkommnisse in Hawkins.' },
 { id: 204, type: 'tv', cat: 'all', title: 'Chernobyl', year: '2019', rating: 9.4, poster_path: null, emoji: '☢️', vibe: 'Intensiv', overview: 'Aufarbeitung der Atomkatastrophe.' },
 { id: 205, type: 'tv', cat: 'action', title: 'The Mandalorian', year: '2019', rating: 8.7, poster_path: null, emoji: '🛡️', vibe: 'Sci-Fi Action', overview: 'Abenteuer eines Kopfgeldjägers.' },
 { id: 206, type: 'tv', cat: 'action', title: 'The Boys', year: '2019', rating: 8.7, poster_path: null, emoji: '⚡', vibe: 'Düster & Action', overview: 'Kampf gegen korrupte Superhelden.' },
-{ id: 207, type: 'tv', cat: 'action', title: 'Peacemaker', year: '2022', rating: 8.3, poster_path: null, emoji: '🕊️', vibe: 'Action & Humor', overview: 'Die Mission des Helden.' },
-{ id: 208, type: 'tv', cat: 'comedy', title: 'The Office', year: '2005', rating: 9.0, poster_path: null, emoji: '📎', vibe: 'Zum Totlachen', overview: 'Der wahnsinnige Büroalltag.' },
-{ id: 209, type: 'tv', cat: 'comedy', title: 'Brooklyn Nine-Nine', year: '2013', rating: 8.4, poster_path: null, emoji: '👮', vibe: 'Witzig & Charmant', overview: 'Polizeialltag in New York.' },
-{ id: 210, type: 'tv', cat: 'comedy', title: 'Modern Family', year: '2009', rating: 8.5, poster_path: null, emoji: '👨‍👩‍👦', vibe: 'Feel-Good', overview: 'Turbulentes Leben einer Großfamilie.' },
-{ id: 211, type: 'tv', cat: 'scifi', title: 'Dark', year: '2017', rating: 8.7, poster_path: null, emoji: '⏳', vibe: 'Komplex & Packend', overview: 'Verschwinden in deutscher Kleinstadt.' },
-{ id: 212, type: 'tv', cat: 'scifi', title: 'The Witcher', year: '2019', rating: 8.0, poster_path: null, emoji: '⚔️', vibe: 'Fantasy', overview: 'Abenteuer eines Hexers.' },
-{ id: 213, type: 'tv', cat: 'scifi', title: 'The Last of Us', year: '2023', rating: 8.8, poster_path: null, emoji: '🍄', vibe: 'Dramatisch', overview: 'Reise durch zerstörte Zivilisation.' },
-{ id: 214, type: 'tv', cat: 'thriller', title: 'Sherlock', year: '2010', rating: 9.1, poster_path: null, emoji: '🔍', vibe: 'Genial', overview: 'Modernisierte Abenteuer des Detektivs.' },
-{ id: 215, type: 'tv', cat: 'thriller', title: 'Narcos', year: '2015', rating: 8.8, poster_path: null, emoji: '📦', vibe: 'Packend', overview: 'Aufstieg der Drogenkartelle.' },
-{ id: 216, type: 'tv', cat: 'thriller', title: 'Mindhunter', year: '2017', rating: 8.6, poster_path: null, emoji: '🧠', vibe: 'Psychologisch', overview: 'Anfänge der Kriminalpsychologie.' },
-{ id: 217, type: 'tv', cat: 'horror', title: 'The Haunting of Hill House', year: '2018', rating: 8.6, poster_path: null, emoji: '🏡', vibe: 'Gänsehaut', overview: 'Geister aus der Vergangenheit.' },
-{ id: 218, type: 'tv', cat: 'horror', title: 'All of Us Are Dead', year: '2022', rating: 7.5, poster_path: null, emoji: '🧟', vibe: 'Spannend', overview: 'Zombieflut in einer Schule.' },
-{ id: 219, type: 'tv', cat: 'drama', title: 'Succession', year: '2018', rating: 8.9, poster_path: null, emoji: '💼', vibe: 'Intrikat', overview: 'Machtkampf um Medienimperium.' },
-{ id: 220, type: 'tv', cat: 'drama', title: 'Peaky Blinders', year: '2013', rating: 8.8, poster_path: null, emoji: '🎩', vibe: 'Stilvoll', overview: 'Gangsterbande im Nachkriegs-Birmingham.' },
-{ id: 221, type: 'tv', cat: 'romance', title: 'Bridgerton', year: '2020', rating: 7.4, poster_path: null, emoji: '💌', vibe: 'Kostümdrama', overview: 'Liebesgeschichten in London.' },
-{ id: 222, type: 'tv', cat: 'romance', title: 'Normal People', year: '2020', rating: 8.4, poster_path: null, emoji: '🌹', vibe: 'Tiefgründig', overview: 'Liebesbeziehung zweier Jugendlicher.' },
-{ id: 223, type: 'tv', cat: 'animation', title: 'Arcane', year: '2021', rating: 9.0, poster_path: null, emoji: '🎨', vibe: 'Meisterwerk', overview: 'Konflikt zweier Städte.' },
-{ id: 224, type: 'tv', cat: 'animation', title: 'Attack on Titan', year: '2013', rating: 9.1, poster_path: null, emoji: '🗡️', vibe: 'Episch', overview: 'Kampf gegen Giganten.' }
+{ id: 207, type: 'tv', cat: 'comedy', title: 'The Office', year: '2005', rating: 9.0, poster_path: null, emoji: '📎', vibe: 'Zum Totlachen', overview: 'Der wahnsinnige Büroalltag.' },
+{ id: 208, type: 'tv', cat: 'comedy', title: 'Brooklyn Nine-Nine', year: '2013', rating: 8.4, poster_path: null, emoji: '👮', vibe: 'Witzig & Charmant', overview: 'Polizeialltag in New York.' },
+{ id: 209, type: 'tv', cat: 'scifi', title: 'Dark', year: '2017', rating: 8.7, poster_path: null, emoji: '⏳', vibe: 'Komplex & Packend', overview: 'Verschwinden in deutscher Kleinstadt.' },
+{ id: 210, type: 'tv', cat: 'scifi', title: 'The Witcher', year: '2019', rating: 8.0, poster_path: null, emoji: '⚔️', vibe: 'Fantasy', overview: 'Abenteuer eines Hexers.' },
+{ id: 211, type: 'tv', cat: 'thriller', title: 'Sherlock', year: '2010', rating: 9.1, poster_path: null, emoji: '🔍', vibe: 'Genial', overview: 'Modernisierte Abenteuer des Detektivs.' },
+{ id: 212, type: 'tv', cat: 'thriller', title: 'Narcos', year: '2015', rating: 8.8, poster_path: null, emoji: '📦', vibe: 'Packend', overview: 'Aufstieg der Drogenkartelle.' },
+{ id: 213, type: 'tv', cat: 'horror', title: 'The Haunting of Hill House', year: '2018', rating: 8.6, poster_path: null, emoji: '🏡', vibe: 'Gänsehaut', overview: 'Geister aus der Vergangenheit.' },
+{ id: 214, type: 'tv', cat: 'drama', title: 'Succession', year: '2018', rating: 8.9, poster_path: null, emoji: '💼', vibe: 'Intrikat', overview: 'Machtkampf um Medienimperium.' },
+{ id: 215, type: 'tv', cat: 'romance', title: 'Bridgerton', year: '2020', rating: 7.4, poster_path: null, emoji: '💌', vibe: 'Kostümdrama', overview: 'Liebesgeschichten in London.' },
+{ id: 216, type: 'tv', cat: 'animation', title: 'Arcane', year: '2021', rating: 9.0, poster_path: null, emoji: '🎨', vibe: 'Meisterwerk', overview: 'Konflikt zweier Städte.' }
 ];
 
 let state = { step: 1, mediaType: 'movie', category: null, watchedItems: [], includeWatched: false, isMuted: false, isSpinning: false, currentWinner: null, rouletteItems: [], tmdbApiKey: '', activePool: [], apiStatus: 'checking', apiMessage: 'Verbindung wird geprüft...' };
@@ -535,12 +528,20 @@ let apiSuccess = false;
 if (state.tmdbApiKey && state.tmdbApiKey.length > 5) {
 try {
 let fetchedItems = [];
-const genreIdToUse = state.category.genreId ? (typeof state.category.genreId === 'object' ? state.category.genreId[state.mediaType] : state.category.genreId) : null;
+const genreIdToUse = state.category.genreId && state.category.genreId !== 'top' ? (typeof state.category.genreId === 'object' ? state.category.genreId[state.mediaType] : state.category.genreId) : null;
 
 for (let page = 1; page <= 3; page++) {
-let url = genreIdToUse
-? `https://api.themoviedb.org/3/discover/${state.mediaType}?api_key=${state.tmdbApiKey}&language=de-DE&with_genres=${genreIdToUse}&sort_by=popularity.desc&page=${page}`
-: `https://api.themoviedb.org/3/trending/${state.mediaType}/day?api_key=${state.tmdbApiKey}&language=de-DE&page=${page}`;
+let url = '';
+if (state.category.id === 'top') {
+url = `https://api.themoviedb.org/3/movie/top_rated?api_key=${state.tmdbApiKey}&language=de-DE&region=DE&page=${page}`;
+if (state.mediaType === 'tv') {
+url = `https://api.themoviedb.org/3/tv/top_rated?api_key=${state.tmdbApiKey}&language=de-DE&page=${page}`;
+}
+} else if (genreIdToUse) {
+url = `https://api.themoviedb.org/3/discover/${state.mediaType}?api_key=${state.tmdbApiKey}&language=de-DE&region=DE&with_original_language=de|en|fr|es|it|sv|da|nl|no&with_genres=${genreIdToUse}&sort_by=vote_count.desc&page=${page}`;
+} else {
+url = `https://api.themoviedb.org/3/trending/${state.mediaType}/day?api_key=${state.tmdbApiKey}&language=de-DE&page=${page}`;
+}
 
 const res = await fetch(url);
 if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
@@ -574,6 +575,7 @@ if (!apiSuccess || results.length < 5) {
 updateApiStatusUI('offline', 'API nicht erreichbar oder kein Key – Offline-Datenbank aktiv.');
 results = FALLBACK_DATABASE.filter(item => {
 if (item.type !== state.mediaType) return false;
+if (state.category.id === 'top') return item.cat === 'top' || item.rating >= 8.5;
 if (state.category.id !== 'all' && item.cat !== state.category.id && item.cat !== 'all') return false;
 return true;
 });
@@ -593,6 +595,16 @@ document.getElementById('emptyPoolBanner').classList.toggle('hidden', results.le
 document.querySelector('#poolCounter span').textContent = state.activePool.length;
 
 buildRouletteStrip(state.activePool);
+}
+
+function shuffleCurrentPool() {
+if (state.isSpinning) return;
+if (state.activePool && state.activePool.length > 0) {
+// Zufällig mischen
+state.activePool.sort(() => Math.random() - 0.5);
+buildRouletteStrip(state.activePool);
+showToast('🎲 Pool erfolgreich durchgemischt!');
+}
 }
 
 function buildRouletteStrip(pool) {
@@ -751,10 +763,10 @@ showToast('Erfolgreich geladen!');
 }
 
 function enableWatchedAndSpin() {
-  state.includeWatched = true;
-  document.getElementById('includeWatchedToggle').checked = true;
-  saveToStorage();
-  startSpin();
+state.includeWatched = true;
+document.getElementById('includeWatchedToggle').checked = true;
+saveToStorage();
+startSpin();
 }
 
 function showToast(msg) {
