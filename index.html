@@ -68,11 +68,6 @@ border-bottom: 4px solid #ffd700;
 background: linear-gradient(180deg, #241f12 0%, rgba(255, 215, 0, 0.32) 100%);
 box-shadow: inset 0 0 20px rgba(255, 215, 0, 0.15);
 }
-.glow-gold { box-shadow: 0 0 35px rgba(255, 215, 0, 0.35); border-color: #ffd700; }
-.glow-red { box-shadow: 0 0 30px rgba(235, 75, 75, 0.35); border-color: #eb4b4b; }
-.glow-pink { box-shadow: 0 0 25px rgba(211, 44, 230, 0.3); border-color: #d32ce6; }
-.glow-purple { box-shadow: 0 0 25px rgba(136, 71, 255, 0.3); border-color: #8847ff; }
-.glow-blue { box-shadow: 0 0 20px rgba(75, 105, 255, 0.25); border-color: #4b69ff; }
 .roulette-mask {
 mask-image: linear-gradient(to right, transparent 0%, black 12%, black 88%, transparent 100%);
 -webkit-mask-image: linear-gradient(to right, transparent 0%, black 12%, black 88%, transparent 100%);
@@ -105,7 +100,7 @@ CineCase <span class="text-amber-400">CS:2</span>
 </button>
 <button onclick="openSettingsModal()" id="dbStatusBadge" class="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-800/80 border border-slate-700/80 text-[11px] font-semibold text-slate-300 hover:border-amber-500/50 transition">
 <span id="dbStatusDot" class="w-2 h-2 rounded-full bg-slate-400"></span>
-<span id="dbStatusText">Offline-Liste</span>
+<span id="dbStatusText">Offline-Modus</span>
 </button>
 </div>
 <div class="flex items-center gap-2 sm:gap-3">
@@ -164,11 +159,11 @@ CineCase <span class="text-amber-400">CS:2</span>
 <h3 class="font-display text-3xl font-extrabold text-white uppercase mb-2">Film schauen</h3>
 <p class="text-slate-400 text-sm mb-6">Abgeschlossene Storys für einen Abend.</p>
 <div class="flex items-center justify-between text-xs text-slate-300 pt-4 border-t border-slate-800">
-<span id="movieCountLabel">Filme bereit</span>
+<span>Filme bereit</span>
 <span class="text-amber-400">Auswählen →</span>
 </div>
 </button>
-<button onclick="selectMediaType('series')" class="group relative overflow-hidden rounded-3xl bg-[#131822] border-2 border-slate-800 hover:border-purple-400 p-8 text-left transition-all hover:-translate-y-1.5">
+<button onclick="selectMediaType('tv')" class="group relative overflow-hidden rounded-3xl bg-[#131822] border-2 border-slate-800 hover:border-purple-400 p-8 text-left transition-all hover:-translate-y-1.5">
 <div class="flex items-center justify-between mb-6">
 <div class="w-16 h-16 rounded-2xl bg-purple-500/20 border border-purple-500/30 flex items-center justify-center text-4xl">📺</div>
 <span class="px-3 py-1 rounded-lg bg-slate-800 text-xs font-bold text-purple-400 uppercase">Series Case</span>
@@ -176,7 +171,7 @@ CineCase <span class="text-amber-400">CS:2</span>
 <h3 class="font-display text-3xl font-extrabold text-white uppercase mb-2">Serie starten</h3>
 <p class="text-slate-400 text-sm mb-6">Binge-Potential für gemeinsame Abende.</p>
 <div class="flex items-center justify-between text-xs text-slate-300 pt-4 border-t border-slate-800">
-<span id="seriesCountLabel">Serien bereit</span>
+<span>Serien bereit</span>
 <span class="text-purple-400">Auswählen →</span>
 </div>
 </button>
@@ -229,13 +224,13 @@ CineCase <span class="text-amber-400">CS:2</span>
 <div class="flex flex-col lg:flex-row justify-between gap-6 relative z-10">
 <div class="flex flex-col sm:flex-row items-start gap-5 max-w-3xl">
 <div id="winnerVisualContainer" class="w-28 h-40 sm:w-32 sm:h-48 shrink-0 rounded-2xl bg-[#1a2130] border border-slate-700 flex items-center justify-center overflow-hidden shadow-xl mx-auto">
-<img id="winnerPosterImg" src="" alt="Poster" class="w-full h-full object-cover" onerror="this.classList.add('hidden'); document.getElementById('winnerEmoji').classList.remove('hidden');">
-<span id="winnerEmoji" class="text-5xl hidden">🎬</span>
+<img id="winnerPosterImg" src="" alt="Poster" class="w-full h-full object-cover hidden" onerror="this.classList.add('hidden'); document.getElementById('winnerEmoji').classList.remove('hidden');">
+<span id="winnerEmoji" class="text-5xl">🎬</span>
 </div>
 <div class="space-y-3">
 <div class="flex flex-wrap items-center gap-2">
-<span id="winnerRarityBadge" class="px-3 py-1 rounded-lg text-xs font-extrabold uppercase">Drop</span>
-<span id="winnerMediaTypeBadge" class="px-2.5 py-1 rounded-lg text-xs bg-slate-800 text-slate-300">Film</span>
+<span id="winnerRarityBadge" class="px-3 py-1 rounded-lg text-xs font-extrabold uppercase bg-amber-500/20 text-amber-400">Highlight</span>
+<span id="winnerMediaTypeBadge" class="px-2.5 py-1 rounded-lg text-xs bg-slate-800 text-slate-300">Titel</span>
 <span id="winnerYear" class="px-2.5 py-1 rounded-lg text-xs bg-slate-800 text-slate-300">2024</span>
 <span class="px-2.5 py-1 rounded-lg text-xs bg-amber-500/15 text-amber-400">⭐ <span id="winnerRating">8.0</span></span>
 </div>
@@ -284,7 +279,7 @@ CineCase <span class="text-amber-400">CS:2</span>
 <input type="text" id="tmdbApiKeyInput" placeholder="API Key..." class="flex-grow bg-[#0b0e14] border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-white font-mono">
 <button onclick="saveAndTestTmdbKey()" id="saveTmdbBtn" class="px-4 py-2.5 rounded-xl bg-amber-500 text-slate-950 font-bold text-sm shrink-0">Speichern</button>
 </div>
-<small class="text-slate-400 text-xs block">Trage hier deinen kostenlosen Key von themoviedb.org ein, um tausende Live-Titel zu laden.</small>
+<small class="text-slate-400 text-xs block">Trage hier deinen kostenlosen Key von themoviedb.org ein.</small>
 </div>
 <div class="pt-4 border-t border-slate-800 space-y-3">
 <label class="text-sm font-bold text-white">Sync-Code</label>
@@ -300,26 +295,38 @@ CineCase <span class="text-amber-400">CS:2</span>
 <script>
 const CATEGORIES = [
 { id: 'all', name: 'Beliebt / Mix', icon: '🎲', desc: 'Die besten Highlights quer durch alle Genres.', genreId: null },
-{ id: 'action', name: 'Action & Abenteuer', icon: '💥', desc: 'Adrenalin und Verfolgungsjagden.', genreId: 28 },
-{ id: 'comedy', name: 'Komödie', icon: '😂', desc: 'Zum Abschalten und Lachen.', genreId: 35 },
-{ id: 'scifi', name: 'Sci-Fi & Fantasy', icon: '🚀', desc: 'Fremde Welten und Zukunftsvisionen.', genreId: 878 },
-{ id: 'thriller', name: 'Thriller & Krimi', icon: '🕵️', desc: 'Spannung und krasse Plot-Twists.', genreId: 53 },
-{ id: 'horror', name: 'Horror', icon: '👻', desc: 'Gänsehaut für den Filmabend.', genreId: 27 },
-{ id: 'drama', name: 'Drama', icon: '🎭', desc: 'Tiefgründige Geschichten.', genreId: 18 },
-{ id: 'romance', name: 'Romantik', icon: '❤️', desc: 'Herzklopfen und Liebesgeschichten.', genreId: 10749 },
-{ id: 'animation', name: 'Animation / Anime', icon: '🎨', desc: 'Visuelle Kunstwerke.', genreId: 16 }
+{ id: 'action', name: 'Action & Abenteuer', icon: '💥', desc: 'Adrenalin und Verfolgungsjagden.', genreId: '28,12' },
+{ id: 'comedy', name: 'Komödie', icon: '😂', desc: 'Zum Abschalten und Lachen.', genreId: '35' },
+{ id: 'scifi', name: 'Sci-Fi & Fantasy', icon: '🚀', desc: 'Fremde Welten und Zukunftsvisionen.', genreId: '878,14' },
+{ id: 'thriller', name: 'Thriller & Krimi', icon: '🕵️', desc: 'Spannung und krasse Plot-Twists.', genreId: '53,80,9648' },
+{ id: 'horror', name: 'Horror', icon: '👻', desc: 'Gänsehaut für den Filmabend.', genreId: '27' },
+{ id: 'drama', name: 'Drama', icon: '🎭', desc: 'Tiefgründige Geschichten.', genreId: '18' },
+{ id: 'romance', name: 'Romantik', icon: '❤️', desc: 'Herzklopfen und Liebesgeschichten.', genreId: '10749' },
+{ id: 'animation', name: 'Animation / Anime', icon: '🎨', desc: 'Visuelle Kunstwerke.', genreId: '16' }
 ];
 
-// Umfangreicher Offline-Pool als Fallback, falls kein Key aktiv ist
+// Robuster Offline-Pool mit zahlreichen unterschiedlichen Titeln für alle Kategorien als Garant
 const FALLBACK_DATABASE = [
-{ id: 1, type: 'movie', cat: 'action', title: 'Mad Max: Fury Road', year: '2015', rating: 8.1, poster_path: null, emoji: '🔥', vibe: 'Adrenalin', overview: 'Postapokalyptische Verfolgungsjagd.' },
-{ id: 2, type: 'movie', cat: 'comedy', title: 'Ziemlich beste Freunde', year: '2011', rating: 8.5, poster_path: null, emoji: '🤝', vibe: 'Herzerwärmend', overview: 'Zwei völlig unterschiedliche Welten treffen aufeinander.' },
-{ id: 3, type: 'movie', cat: 'scifi', title: 'Interstellar', year: '2014', rating: 8.7, poster_path: null, emoji: '🌌', vibe: 'Episch', overview: 'Reise durch ein Wurmloch im All.' },
-{ id: 4, type: 'series', cat: 'all', title: 'Breaking Bad', year: '2008', rating: 9.5, poster_path: null, emoji: '🧪', vibe: 'Meisterwerk', overview: 'Chemie-Lehrer wird zum Drogenboss.' },
-{ id: 5, type: 'series', cat: 'all', title: 'Stranger Things', year: '2016', rating: 8.7, poster_path: null, emoji: '🚲', vibe: '80er Nostalgie', overview: 'Geheimnisvolle Vorkommnisse in einer Kleinstadt.' }
+{ id: 101, type: 'movie', cat: 'action', title: 'Mad Max: Fury Road', year: '2015', rating: 8.1, poster_path: null, emoji: '🔥', vibe: 'Adrenalin', overview: 'Postapokalyptische Verfolgungsjagd.' },
+{ id: 102, type: 'movie', cat: 'action', title: 'John Wick', year: '2014', rating: 7.4, poster_path: null, emoji: '🔫', vibe: 'Stylish', overview: 'Ex-Auftragskiller auf Rachefeldzug.' },
+{ id: 103, type: 'movie', cat: 'action', title: 'The Dark Knight', year: '2008', rating: 9.0, poster_path: null, emoji: '🦇', vibe: 'Meisterwerk', overview: 'Batman gegen den Joker.' },
+{ id: 104, type: 'movie', cat: 'comedy', title: 'Ziemlich beste Freunde', year: '2011', rating: 8.5, poster_path: null, emoji: '🤝', vibe: 'Herzerwärmend', overview: 'Zwei Welten treffen aufeinander.' },
+{ id: 105, type: 'movie', cat: 'comedy', title: 'Hangover', year: '2009', rating: 7.7, poster_path: null, emoji: '🍻', vibe: 'Chaotisch', overview: 'Junggesellenabschied in Las Vegas.' },
+{ id: 106, type: 'movie', cat: 'scifi', title: 'Interstellar', year: '2014', rating: 8.7, poster_path: null, emoji: '🌌', vibe: 'Episch', overview: 'Reise durch ein Wurmloch im All.' },
+{ id: 107, type: 'movie', cat: 'scifi', title: 'Matrix', year: '1999', rating: 8.7, poster_path: null, emoji: '💊', vibe: 'Legendär', overview: 'Entdeckung der simulierten Realität.' },
+{ id: 108, type: 'movie', cat: 'thriller', title: 'Sieben', year: '1995', rating: 8.6, poster_path: null, emoji: '📦', vibe: 'Düster & Packend', overview: 'Jagd auf Serienmörder.' },
+{ id: 109, type: 'movie', cat: 'horror', title: 'Conjuring', year: '2013', rating: 7.5, poster_path: null, emoji: '👻', vibe: 'Gruselig', overview: 'Paranormale Ermittlungen.' },
+{ id: 110, type: 'movie', cat: 'drama', title: 'Fight Club', year: '1999', rating: 8.8, poster_path: null, emoji: '🧼', vibe: 'Kult', overview: 'Gründung eines Untergrund-Clubs.' },
+{ id: 111, type: 'movie', cat: 'romance', title: 'La La Land', year: '2016', rating: 8.0, poster_path: null, emoji: '🎷', vibe: 'Musikalisch', overview: 'Liebe und Träume in Los Angeles.' },
+{ id: 112, type: 'movie', cat: 'animation', title: 'Spirited Away', year: '2001', rating: 8.6, poster_path: null, emoji: '🐉', vibe: 'Magisch', overview: 'Reise in eine geheimnisvolle Geisterwelt.' },
+{ id: 201, type: 'tv', cat: 'all', title: 'Breaking Bad', year: '2008', rating: 9.5, poster_path: null, emoji: '🧪', vibe: 'Meisterwerk', overview: 'Chemie-Lehrer wird zum Drogenboss.' },
+{ id: 202, type: 'tv', cat: 'all', title: 'Stranger Things', year: '2016', rating: 8.7, poster_path: null, emoji: '🚲', vibe: '80er Nostalgie', overview: 'Geheimnisvolle Vorkommnisse in Hawkins.' },
+{ id: 203, type: 'tv', cat: 'all', title: 'Chernobyl', year: '2019', rating: 9.4, poster_path: null, emoji: '☢️', vibe: 'Intensiv', overview: 'Aufarbeitung der Atomkatastrophe.' },
+{ id: 204, type: 'tv', cat: 'all', title: 'Game of Thrones', year: '2011', rating: 9.2, poster_path: null, emoji: '👑', vibe: 'Episch', overview: 'Kampf um den Eisernen Thron.' },
+{ id: '205', type: 'tv', cat: 'comedy', title: 'The Office', year: '2005', rating: 9.0, poster_path: null, emoji: '📎', vibe: 'Zum Totlachen', overview: 'Der wahnsinnige Büroalltag.' }
 ];
 
-let state = { step: 1, mediaType: null, category: null, watchedItems: [], includeWatched: false, isMuted: false, isSpinning: false, currentWinner: null, rouletteItems: [], tmdbApiKey: '', activePool: [] };
+let state = { step: 1, mediaType: 'movie', category: null, watchedItems: [], includeWatched: false, isMuted: false, isSpinning: false, currentWinner: null, rouletteItems: [], tmdbApiKey: '', activePool: [] };
 
 document.addEventListener('DOMContentLoaded', () => {
 loadFromStorage();
@@ -391,7 +398,7 @@ osc.start(); osc.stop(audioCtx.currentTime + 0.04);
 
 function resetToStep1() {
 if (state.isSpinning) return;
-state.step = 1; state.mediaType = null; state.category = null;
+state.step = 1; state.mediaType = 'movie'; state.category = null;
 document.getElementById('step1Section').classList.remove('hidden');
 document.getElementById('step2Section').classList.add('hidden');
 document.getElementById('step3Section').classList.add('hidden');
@@ -414,7 +421,6 @@ renderCategoryGrid();
 
 function goToStep2() {
 if (state.isSpinning) return;
-if (!state.mediaType) { resetToStep1(); return; }
 selectMediaType(state.mediaType);
 }
 
@@ -447,14 +453,18 @@ await loadMediaPool();
 
 async function loadMediaPool() {
 let results = [];
-// 1. TMDB-Abruf, wenn Key vorhanden
+// 1. TMDB-Abruf wenn Key vorhanden
 if (state.tmdbApiKey && state.tmdbApiKey.length > 5) {
 try {
-const endpoint = state.category.genreId ? 'discover' : 'trending';
-const url = `https://api.themoviedb.org/3/${endpoint}/${state.mediaType}/day?api_key=${state.tmdbApiKey}&language=de-DE${state.category.genreId ? '&with_genres=' + state.category.genreId : ''}`;
+let url = '';
+if (state.category.genreId) {
+url = `https://api.themoviedb.org/3/discover/${state.mediaType}?api_key=${state.tmdbApiKey}&language=de-DE&with_genres=${state.category.genreId}&sort_by=popularity.desc&page=1`;
+} else {
+url = `https://api.themoviedb.org/3/trending/${state.mediaType}/day?api_key=${state.tmdbApiKey}&language=de-DE`;
+}
 const res = await fetch(url);
 const data = await res.json();
-if (data && data.results) {
+if (data && data.results && data.results.length > 0) {
 results = data.results.map(item => ({
 id: item.id,
 type: state.mediaType,
@@ -468,13 +478,18 @@ overview: item.overview || 'Keine Beschreibung vorhanden.'
 }));
 }
 } catch (e) {
-console.error("TMDB error, using fallback", e);
+console.error("TMDB error:", e);
 }
 }
 
-// 2. Fallback, falls API leer oder kein Key
-if (results.length === 0) {
-results = FALLBACK_DATABASE.filter(item => state.mediaType === 'movie' ? item.type === 'movie' : item.type === 'series');
+// 2. Fallback oder Ergänzung aus lokaler Datenbank
+if (results.length < 5) {
+const fallbacks = FALLBACK_DATABASE.filter(item => {
+if (item.type !== state.mediaType) return false;
+if (state.category.id !== 'all' && item.cat !== state.category.id && item.cat !== 'all') return false;
+return true;
+});
+results = [...results, ...fallbacks];
 }
 
 // 3. History-Filter anwenden
@@ -504,9 +519,7 @@ const card = document.createElement('div');
 card.style.width = '176px';
 card.className = 'shrink-0 h-40 rounded-xl border border-slate-700 bg-[#1a2130] p-3 flex flex-col justify-between overflow-hidden relative';
 
-const posterUrl = item.poster_path 
-? `https://image.tmdb.org/t/p/w200${item.poster_path}`
-: null;
+const posterUrl = item.poster_path ? `https://image.tmdb.org/t/p/w200${item.poster_path}` : null;
 
 card.innerHTML = `
 <div class="flex justify-between items-center text-xs text-amber-400 font-bold z-10">
@@ -529,7 +542,7 @@ await loadMediaPool();
 const track = document.getElementById('rouletteTrack');
 void track.offsetWidth; 
 
-const winner = state.rouletteItems[35]; // Gewinner bei Position 35
+const winner = state.rouletteItems[35]; 
 state.currentWinner = winner;
 
 const viewportWidth = document.getElementById('rouletteViewport').offsetWidth;
