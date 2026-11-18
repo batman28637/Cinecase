@@ -229,8 +229,8 @@ CineCase <span class="text-amber-400">CS:2</span>
 <div class="flex flex-col lg:flex-row justify-between gap-6 relative z-10">
 <div class="flex flex-col sm:flex-row items-start gap-5 max-w-3xl">
 <div id="winnerVisualContainer" class="w-28 h-40 sm:w-32 sm:h-48 shrink-0 rounded-2xl bg-[#1a2130] border border-slate-700 flex items-center justify-center overflow-hidden shadow-xl mx-auto">
-<img id="winnerPosterImg" src="" alt="Poster" class="hidden w-full h-full object-cover" onerror="this.classList.add('hidden'); document.getElementById('winnerEmoji').classList.remove('hidden');">
-<span id="winnerEmoji" class="text-5xl">🚀</span>
+<img id="winnerPosterImg" src="" alt="Poster" class="w-full h-full object-cover" onerror="this.classList.add('hidden'); document.getElementById('winnerEmoji').classList.remove('hidden');">
+<span id="winnerEmoji" class="text-5xl hidden">🎬</span>
 </div>
 <div class="space-y-3">
 <div class="flex flex-wrap items-center gap-2">
@@ -263,10 +263,6 @@ CineCase <span class="text-amber-400">CS:2</span>
 <h3 class="font-display text-2xl font-extrabold text-white">📜 Bereits geschaut</h3>
 <button onclick="closeHistoryModal()" class="w-9 h-9 rounded-xl bg-slate-800 text-slate-300">✕</button>
 </div>
-<div class="p-4 bg-[#0f131c] border-b border-slate-800">
-<input type="text" id="manualSearchInput" oninput="filterManualSuggestions()" placeholder="Titel suchen..." class="w-full bg-[#1a2130] border border-slate-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-amber-400">
-<div id="manualSuggestions" class="hidden mt-2 max-h-40 overflow-y-auto rounded-xl bg-[#1a2130] border border-slate-700 divide-y divide-slate-800"></div>
-</div>
 <div id="historyList" class="flex-grow overflow-y-auto p-4 space-y-2.5"></div>
 <div class="p-4 border-t border-slate-800 bg-[#0f131c] flex items-center justify-between">
 <span id="historyTotalText" class="text-xs text-slate-400">0 Titel</span>
@@ -283,12 +279,12 @@ CineCase <span class="text-amber-400">CS:2</span>
 <button onclick="closeSettingsModal()" class="w-9 h-9 rounded-xl bg-slate-800 text-slate-300">✕</button>
 </div>
 <div class="space-y-3">
-<label class="text-sm font-bold text-white">TMDB API-Key</label>
+<label class="text-sm font-bold text-white">TMDB API-Key (Für Live-Daten & Poster)</label>
 <div class="flex gap-2">
 <input type="text" id="tmdbApiKeyInput" placeholder="API Key..." class="flex-grow bg-[#0b0e14] border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-white font-mono">
 <button onclick="saveAndTestTmdbKey()" id="saveTmdbBtn" class="px-4 py-2.5 rounded-xl bg-amber-500 text-slate-950 font-bold text-sm shrink-0">Speichern</button>
 </div>
-<div id="apiTestFeedback" class="hidden text-xs px-3 py-2 rounded-xl"></div>
+<small class="text-slate-400 text-xs block">Trage hier deinen kostenlosen Key von themoviedb.org ein, um tausende Live-Titel zu laden.</small>
 </div>
 <div class="pt-4 border-t border-slate-800 space-y-3">
 <label class="text-sm font-bold text-white">Sync-Code</label>
@@ -303,37 +299,34 @@ CineCase <span class="text-amber-400">CS:2</span>
 <div id="toastContainer" class="fixed bottom-5 left-1/2 -translate-x-1/2 z-50 flex flex-col items-center gap-2 pointer-events-none"></div>
 <script>
 const CATEGORIES = [
-{ id: 'all', name: 'Beliebt / Mix', icon: '🎲', desc: 'Die besten Highlights quer durch alle Genres.', color: 'from-amber-500/20 to-red-500/20 border-amber-500/40', tmdbMovie: '', tmdbTv: '' },
-{ id: 'action', name: 'Action & Abenteuer', icon: '💥', desc: 'Adrenalin und Verfolgungsjagden.', color: 'from-orange-500/20 to-red-600/20 border-orange-500/40', tmdbMovie: '28,12', tmdbTv: '10759' },
-{ id: 'comedy', name: 'Komödie', icon: '😂', desc: 'Zum Abschalten und Lachen.', color: 'from-yellow-400/20 to-amber-500/20 border-yellow-400/40', tmdbMovie: '35', tmdbTv: '35' },
-{ id: 'scifi', name: 'Sci-Fi & Fantasy', icon: '🚀', desc: 'Fremde Welten und Zukunftsvisionen.', color: 'from-cyan-500/20 to-blue-600/20 border-cyan-500/40', tmdbMovie: '878,14', tmdbTv: '10765' },
-{ id: 'thriller', name: 'Thriller & Krimi', icon: '🕵️', desc: 'Spannung und krasse Plot-Twists.', color: 'from-purple-500/20 to-indigo-600/20 border-purple-500/40', tmdbMovie: '53,80,9648', tmdbTv: '80,9648' },
-{ id: 'horror', name: 'Horror', icon: '👻', desc: 'Gänsehaut für den Filmabend.', color: 'from-red-600/20 to-rose-900/30 border-red-500/40', tmdbMovie: '27', tmdbTv: '9648,10765' },
-{ id: 'drama', name: 'Drama', icon: '🎭', desc: 'Tiefgründige Geschichten.', color: 'from-blue-500/20 to-slate-700/30 border-blue-500/40', tmdbMovie: '18', tmdbTv: '18' },
-{ id: 'romance', name: 'Romantik', icon: '❤️', desc: 'Herzklopfen und Liebesgeschichten.', color: 'from-pink-500/20 to-rose-500/20 border-pink-500/40', tmdbMovie: '10749', tmdbTv: '10749,18' },
-{ id: 'animation', name: 'Animation / Anime', icon: '🎨', desc: 'Visuelle Kunstwerke.', color: 'from-emerald-500/20 to-teal-600/20 border-emerald-500/40', tmdbMovie: '16', tmdbTv: '16' },
-{ id: 'docu', name: 'Dokumentation', icon: '🌍', desc: 'Wahre Geschichten und Natur.', color: 'from-teal-500/20 to-green-600/20 border-teal-500/40', tmdbMovie: '99', tmdbTv: '99' }
+{ id: 'all', name: 'Beliebt / Mix', icon: '🎲', desc: 'Die besten Highlights quer durch alle Genres.', genreId: null },
+{ id: 'action', name: 'Action & Abenteuer', icon: '💥', desc: 'Adrenalin und Verfolgungsjagden.', genreId: 28 },
+{ id: 'comedy', name: 'Komödie', icon: '😂', desc: 'Zum Abschalten und Lachen.', genreId: 35 },
+{ id: 'scifi', name: 'Sci-Fi & Fantasy', icon: '🚀', desc: 'Fremde Welten und Zukunftsvisionen.', genreId: 878 },
+{ id: 'thriller', name: 'Thriller & Krimi', icon: '🕵️', desc: 'Spannung und krasse Plot-Twists.', genreId: 53 },
+{ id: 'horror', name: 'Horror', icon: '👻', desc: 'Gänsehaut für den Filmabend.', genreId: 27 },
+{ id: 'drama', name: 'Drama', icon: '🎭', desc: 'Tiefgründige Geschichten.', genreId: 18 },
+{ id: 'romance', name: 'Romantik', icon: '❤️', desc: 'Herzklopfen und Liebesgeschichten.', genreId: 10749 },
+{ id: 'animation', name: 'Animation / Anime', icon: '🎨', desc: 'Visuelle Kunstwerke.', genreId: 16 }
 ];
-const RARITIES = {
-blue:   { label: 'Solide', badgeBg: 'bg-[#4b69ff]/20 text-[#7d93ff] border-[#4b69ff]/40', cardClass: 'rarity-blue', glowClass: 'glow-blue', hex: '#4b69ff' },
-purple: { label: 'Stark', badgeBg: 'bg-[#8847ff]/20 text-[#b185ff] border-[#8847ff]/40', cardClass: 'rarity-purple', glowClass: 'glow-purple', hex: '#8847ff' },
-pink:   { label: 'Geheimtipp', badgeBg: 'bg-[#d32ce6]/20 text-[#eb7df7] border-[#d32ce6]/40', cardClass: 'rarity-pink', glowClass: 'glow-pink', hex: '#d32ce6' },
-red:    { label: 'Meisterwerk', badgeBg: 'bg-[#eb4b4b]/20 text-[#ff8080] border-[#eb4b4b]/40', cardClass: 'rarity-red', glowClass: 'glow-red', hex: '#eb4b4b' },
-gold:   { label: '★ Legende', badgeBg: 'bg-[#ffd700]/20 text-[#ffd700] border-[#ffd700]/50', cardClass: 'rarity-gold', glowClass: 'glow-gold', hex: '#ffd700' }
-};
-const MEDIA_DATABASE = [
-{ id: 'm_act_1', type: 'movie', cat: 'action', title: 'Mad Max: Fury Road', year: 2015, duration: '120 Min.', rating: 8.1, rarity: 'red', emoji: '🔥', vibe: 'Adrenalin', desc: 'Postapokalyptische Verfolgungsjagd.' },
-{ id: 'm_com_1', type: 'movie', cat: 'comedy', title: 'Ziemlich beste Freunde', year: 2011, duration: '112 Min.', rating: 8.5, rarity: 'gold', emoji: '🤝', vibe: 'Herzerwärmend', desc: 'Zwei völlig unterschiedliche Welten treffen aufeinander.' },
-{ id: 'm_sci_1', type: 'movie', cat: 'scifi', title: 'Interstellar', year: 2014, duration: '169 Min.', rating: 8.7, rarity: 'gold', emoji: '🌌', vibe: 'Episch', desc: 'Reise durch ein Wurmloch im All.' },
-{ id: 's_thr_1', type: 'series', cat: 'thriller', title: 'Breaking Bad', year: 2008, duration: '5 Staffeln', rating: 9.5, rarity: 'gold', emoji: '🧪', vibe: 'Meisterwerk', desc: 'Chemie-Lehrer wird zum Drogenboss.' }
+
+// Umfangreicher Offline-Pool als Fallback, falls kein Key aktiv ist
+const FALLBACK_DATABASE = [
+{ id: 1, type: 'movie', cat: 'action', title: 'Mad Max: Fury Road', year: '2015', rating: 8.1, poster_path: null, emoji: '🔥', vibe: 'Adrenalin', overview: 'Postapokalyptische Verfolgungsjagd.' },
+{ id: 2, type: 'movie', cat: 'comedy', title: 'Ziemlich beste Freunde', year: '2011', rating: 8.5, poster_path: null, emoji: '🤝', vibe: 'Herzerwärmend', overview: 'Zwei völlig unterschiedliche Welten treffen aufeinander.' },
+{ id: 3, type: 'movie', cat: 'scifi', title: 'Interstellar', year: '2014', rating: 8.7, poster_path: null, emoji: '🌌', vibe: 'Episch', overview: 'Reise durch ein Wurmloch im All.' },
+{ id: 4, type: 'series', cat: 'all', title: 'Breaking Bad', year: '2008', rating: 9.5, poster_path: null, emoji: '🧪', vibe: 'Meisterwerk', overview: 'Chemie-Lehrer wird zum Drogenboss.' },
+{ id: 5, type: 'series', cat: 'all', title: 'Stranger Things', year: '2016', rating: 8.7, poster_path: null, emoji: '🚲', vibe: '80er Nostalgie', overview: 'Geheimnisvolle Vorkommnisse in einer Kleinstadt.' }
 ];
-let state = { step: 1, mediaType: null, category: null, watchedItems: [], includeWatched: false, isMuted: false, isSpinning: false, currentWinner: null, rouletteItems: [], tmdbApiKey: '', livePoolCache: [] };
+
+let state = { step: 1, mediaType: null, category: null, watchedItems: [], includeWatched: false, isMuted: false, isSpinning: false, currentWinner: null, rouletteItems: [], tmdbApiKey: '', activePool: [] };
+
 document.addEventListener('DOMContentLoaded', () => {
 loadFromStorage();
 updateDbStatusUI();
-updateCountsOnStep1();
 updateHistoryUI();
 });
+
 function loadFromStorage() {
 try {
 const h = localStorage.getItem('cinecase_history');
@@ -349,6 +342,7 @@ document.getElementById('includeWatchedToggle').checked = state.includeWatched;
 document.getElementById('muteIcon').textContent = state.isMuted ? '🔇' : '🔊';
 document.getElementById('tmdbApiKeyInput').value = state.tmdbApiKey;
 }
+
 function saveToStorage() {
 try {
 localStorage.setItem('cinecase_history', JSON.stringify(state.watchedItems));
@@ -357,12 +351,15 @@ localStorage.setItem('cinecase_muted', JSON.stringify(state.isMuted));
 localStorage.setItem('cinecase_tmdb', state.tmdbApiKey);
 } catch (e) {}
 }
+
 function isItemWatched(id) { return state.watchedItems.some(item => String(item.id) === String(id)); }
+
 function updateDbStatusUI() {
 const hasKey = state.tmdbApiKey && state.tmdbApiKey.length > 10;
 document.getElementById('dbStatusDot').className = `w-2 h-2 rounded-full ${hasKey ? 'bg-emerald-400' : 'bg-slate-400'}`;
-document.getElementById('dbStatusText').textContent = hasKey ? 'LIVE TMDB' : 'Offline-Liste';
+document.getElementById('dbStatusText').textContent = hasKey ? 'LIVE TMDB' : 'Offline-Modus';
 }
+
 let audioCtx = null;
 function initAudio() {
 if (!audioCtx) {
@@ -371,11 +368,13 @@ if (AC) audioCtx = new AC();
 }
 if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
 }
+
 function toggleMute() {
 state.isMuted = !state.isMuted;
 saveToStorage();
 document.getElementById('muteIcon').textContent = state.isMuted ? '🔇' : '🔊';
 }
+
 function playTick() {
 if (state.isMuted) return;
 try {
@@ -389,6 +388,7 @@ osc.connect(g); g.connect(audioCtx.destination);
 osc.start(); osc.stop(audioCtx.currentTime + 0.04);
 } catch (e) {}
 }
+
 function resetToStep1() {
 if (state.isSpinning) return;
 state.step = 1; state.mediaType = null; state.category = null;
@@ -397,6 +397,7 @@ document.getElementById('step2Section').classList.add('hidden');
 document.getElementById('step3Section').classList.add('hidden');
 document.getElementById('breadcrumbBar').classList.add('hidden');
 }
+
 function selectMediaType(type) {
 if (state.isSpinning) return;
 initAudio();
@@ -410,113 +411,178 @@ document.getElementById('crumbCategory').classList.add('hidden');
 document.getElementById('crumbType').textContent = type === 'movie' ? '🍿 Filme' : '📺 Serien';
 renderCategoryGrid();
 }
+
 function goToStep2() {
 if (state.isSpinning) return;
 if (!state.mediaType) { resetToStep1(); return; }
 selectMediaType(state.mediaType);
 }
-function getOfflinePool(mediaType, catId) {
-return MEDIA_DATABASE.filter(item => {
-if (item.type !== mediaType) return false;
-if (catId !== 'all' && item.cat !== catId) return false;
-if (!state.includeWatched && isItemWatched(item.id)) return false;
-return true;
-});
-}
+
 function renderCategoryGrid() {
 const grid = document.getElementById('categoryGrid');
 grid.innerHTML = '';
 CATEGORIES.forEach(cat => {
 const btn = document.createElement('button');
-btn.onclick = () => selectCategory(cat.id);
+btn.onclick = () => selectCategory(cat);
 btn.className = 'rounded-2xl bg-[#131822] border border-slate-800 hover:border-amber-400 p-5 text-left transition-all';
 btn.innerHTML = `<div class="text-3xl mb-3">${cat.icon}</div> <h3 class="font-display text-xl font-bold text-white">${cat.name}</h3> <p class="text-xs text-slate-400 mt-1">${cat.desc}</p>`;
 grid.appendChild(btn);
 });
 }
-async function selectCategory(catId) {
+
+async function selectCategory(cat) {
 if (state.isSpinning) return;
-state.category = catId; state.step = 3;
-const catObj = CATEGORIES.find(c => c.id === catId);
+state.category = cat; state.step = 3;
 document.getElementById('step2Section').classList.add('hidden');
 document.getElementById('step3Section').classList.remove('hidden');
 document.getElementById('winnerCard').classList.add('hidden');
 document.getElementById('crumbSep2').classList.remove('hidden');
 document.getElementById('crumbCategory').classList.remove('hidden');
-document.getElementById('crumbCategory').textContent = catObj.name;
-document.getElementById('caseBadgeIcon').textContent = catObj.icon;
-document.getElementById('caseTitle').textContent = catObj.name;
-prepareCasePreview();
+document.getElementById('crumbCategory').textContent = cat.name;
+document.getElementById('caseBadgeIcon').textContent = cat.icon;
+document.getElementById('caseTitle').textContent = cat.name;
+
+await loadMediaPool();
 }
-async function getActivePool() {
-return getOfflinePool(state.mediaType, state.category);
+
+async function loadMediaPool() {
+let results = [];
+// 1. TMDB-Abruf, wenn Key vorhanden
+if (state.tmdbApiKey && state.tmdbApiKey.length > 5) {
+try {
+const endpoint = state.category.genreId ? 'discover' : 'trending';
+const url = `https://api.themoviedb.org/3/${endpoint}/${state.mediaType}/day?api_key=${state.tmdbApiKey}&language=de-DE${state.category.genreId ? '&with_genres=' + state.category.genreId : ''}`;
+const res = await fetch(url);
+const data = await res.json();
+if (data && data.results) {
+results = data.results.map(item => ({
+id: item.id,
+type: state.mediaType,
+title: item.title || item.name,
+year: (item.release_date || item.first_air_date || '2024').substring(0, 4),
+rating: item.vote_average ? item.vote_average.toFixed(1) : '7.5',
+poster_path: item.poster_path,
+emoji: '🎬',
+vibe: state.category.name,
+overview: item.overview || 'Keine Beschreibung vorhanden.'
+}));
 }
-async function prepareCasePreview() {
-const pool = await getActivePool();
-document.getElementById('emptyPoolBanner').classList.toggle('hidden', pool.length > 0);
-document.querySelector('#poolCounter span').textContent = pool.length;
-buildRouletteStrip(pool.length > 0 ? pool : MEDIA_DATABASE);
+} catch (e) {
+console.error("TMDB error, using fallback", e);
 }
+}
+
+// 2. Fallback, falls API leer oder kein Key
+if (results.length === 0) {
+results = FALLBACK_DATABASE.filter(item => state.mediaType === 'movie' ? item.type === 'movie' : item.type === 'series');
+}
+
+// 3. History-Filter anwenden
+if (!state.includeWatched) {
+results = results.filter(item => !isItemWatched(item.id));
+}
+
+state.activePool = results.length > 0 ? results : FALLBACK_DATABASE;
+document.getElementById('emptyPoolBanner').classList.toggle('hidden', results.length > 0);
+document.querySelector('#poolCounter span').textContent = state.activePool.length;
+
+buildRouletteStrip(state.activePool);
+}
+
 function buildRouletteStrip(pool) {
 const track = document.getElementById('rouletteTrack');
 track.style.transition = 'none';
 track.style.transform = 'translateX(0px)';
 track.innerHTML = '';
 state.rouletteItems = [];
-for (let i = 0; i < 40; i++) {
+
+for (let i = 0; i < 50; i++) {
 const item = pool[Math.floor(Math.random() * pool.length)];
 state.rouletteItems.push(item);
+
 const card = document.createElement('div');
 card.style.width = '176px';
-card.className = 'shrink-0 h-40 rounded-xl border border-slate-700 bg-[#1a2130] p-2 flex flex-col justify-between';
-card.innerHTML = `<div class="text-xs text-amber-400">⭐ ${item.rating}</div> <div class="text-center"><span class="text-3xl">${item.emoji}</span><div class="font-bold text-xs text-white truncate mt-1">${item.title}</div></div> <div class="text-[10px] text-slate-400 uppercase">${item.year}</div>`;
+card.className = 'shrink-0 h-40 rounded-xl border border-slate-700 bg-[#1a2130] p-3 flex flex-col justify-between overflow-hidden relative';
+
+const posterUrl = item.poster_path 
+? `https://image.tmdb.org/t/p/w200${item.poster_path}`
+: null;
+
+card.innerHTML = `
+<div class="flex justify-between items-center text-xs text-amber-400 font-bold z-10">
+<span>⭐ ${item.rating}</span>
+<span class="text-[10px] text-slate-400 uppercase">${item.year}</span>
+</div>
+${posterUrl ? `<img src="${posterUrl}" class="absolute inset-0 w-full h-full object-cover opacity-60">` : `<div class="text-center text-3xl my-auto">${item.emoji}</div>`}
+<div class="font-bold text-xs text-white truncate z-10 bg-black/60 px-2 py-1 rounded text-center">${item.title}</div>
+`;
 track.appendChild(card);
 }
 }
+
 async function startSpin() {
 if (state.isSpinning) return;
 state.isSpinning = true;
 document.getElementById('winnerCard').classList.add('hidden');
-// Streifen bei jedem Spin neu mischen und zurücksetzen
-const pool = await getActivePool();
-buildRouletteStrip(pool.length > 0 ? pool : MEDIA_DATABASE);
+
+await loadMediaPool();
 const track = document.getElementById('rouletteTrack');
-void track.offsetWidth; // Reflow erzwingen, damit die Animation neu startet
-const winner = state.rouletteItems[30];
+void track.offsetWidth; 
+
+const winner = state.rouletteItems[35]; // Gewinner bei Position 35
 state.currentWinner = winner;
-// Mitte der Gewinner-Karte (16px Padding + 30 Karten à 188px + halbe Karte) unter die Nadel schieben
+
 const viewportWidth = document.getElementById('rouletteViewport').offsetWidth;
-const offset = 16 + 30 * 188 + 88 - viewportWidth / 2;
+const offset = 16 + 35 * 188 + 88 - viewportWidth / 2;
 track.style.transition = 'transform 4.5s cubic-bezier(0.08, 0.85, 0.14, 1)';
 track.style.transform = `translateX(-${offset}px)`;
+
 let t = 0;
 const interval = setInterval(() => { playTick(); t += 150; if (t > 4400) clearInterval(interval); }, 150);
 setTimeout(() => {
 state.isSpinning = false;
 revealWinner(winner);
+try { confetti({ particleCount: 80, spread: 70, origin: { y: 0.6 } }); } catch(e){}
 }, 4600);
 }
+
 function revealWinner(item) {
 document.getElementById('winnerTitle').textContent = item.title;
 document.getElementById('winnerVibe').textContent = `✨ ${item.vibe}`;
-document.getElementById('winnerDesc').textContent = item.desc;
+document.getElementById('winnerDesc').textContent = item.overview;
 document.getElementById('winnerYear').textContent = item.year;
 document.getElementById('winnerRating').textContent = item.rating;
-document.getElementById('winnerEmoji').textContent = item.emoji;
+
+const posterImg = document.getElementById('winnerPosterImg');
+const emojiSpan = document.getElementById('winnerEmoji');
+if (item.poster_path) {
+posterImg.src = `https://image.tmdb.org/t/p/w300${item.poster_path}`;
+posterImg.classList.remove('hidden');
+emojiSpan.classList.add('hidden');
+} else {
+posterImg.classList.add('hidden');
+emojiSpan.classList.remove('hidden');
+emojiSpan.textContent = item.emoji;
+}
+
 document.getElementById('winnerCard').classList.remove('hidden');
 }
+
 function toggleIncludeWatched() {
 state.includeWatched = document.getElementById('includeWatchedToggle').checked;
 saveToStorage();
 }
+
 function markCurrentAsWatched() {
 if (!state.currentWinner) return;
 if (!isItemWatched(state.currentWinner.id)) {
 state.watchedItems.unshift(state.currentWinner);
 saveToStorage();
 updateHistoryUI();
+showToast('Als geschaut markiert!');
 }
 }
+
 function updateHistoryUI() {
 document.getElementById('historyBadge').textContent = state.watchedItems.length;
 document.getElementById('historyTotalText').textContent = `${state.watchedItems.length} Titel`;
@@ -524,37 +590,44 @@ const list = document.getElementById('historyList');
 list.innerHTML = state.watchedItems.length === 0 ? '<p class="text-slate-400 text-xs text-center py-6">Noch nichts geschaut.</p>' : '';
 state.watchedItems.forEach(item => {
 const row = document.createElement('div');
-row.className = 'flex justify-between items-center p-2 bg-[#1a2130] rounded-xl text-xs text-white';
-row.innerHTML = `<span>${item.emoji} ${item.title}</span><button onclick="removeFromHistory('${item.id}')" class="text-red-400">Entfernen</button>`;
+row.className = 'flex justify-between items-center p-2.5 bg-[#1a2130] rounded-xl text-xs text-white';
+row.innerHTML = `<span>🎬 ${item.title}</span><button onclick="removeFromHistory('${item.id}')" class="text-red-400 font-bold hover:underline">Freigeben</button>`;
 list.appendChild(row);
 });
 }
+
 function removeFromHistory(id) {
 state.watchedItems = state.watchedItems.filter(i => String(i.id) !== String(id));
 saveToStorage();
 updateHistoryUI();
 }
+
 function clearAllHistory() {
 state.watchedItems = [];
 saveToStorage();
 updateHistoryUI();
 }
+
 function openHistoryModal() { updateHistoryUI(); document.getElementById('historyModal').classList.remove('hidden'); }
 function closeHistoryModal() { document.getElementById('historyModal').classList.add('hidden'); }
 function openSettingsModal() { document.getElementById('settingsModal').classList.remove('hidden'); }
 function closeSettingsModal() { document.getElementById('settingsModal').classList.add('hidden'); }
+
 function saveAndTestTmdbKey() {
 state.tmdbApiKey = document.getElementById('tmdbApiKeyInput').value.trim();
 saveToStorage();
 updateDbStatusUI();
-showToast('Gespeichert!');
+showToast('API-Key gespeichert!');
+closeSettingsModal();
 }
+
 function copySyncCode() {
 const code = btoa(JSON.stringify({ k: state.tmdbApiKey, w: state.watchedItems }));
 document.getElementById('syncCodeField').value = code;
 if (navigator.clipboard) navigator.clipboard.writeText(code);
 showToast('Sync-Code kopiert!');
 }
+
 function importSyncCode() {
 try {
 const data = JSON.parse(atob(document.getElementById('syncCodeField').value));
@@ -566,14 +639,14 @@ updateHistoryUI();
 showToast('Erfolgreich geladen!');
 } catch(e) { showToast('Ungültiger Code'); }
 }
-function updateCountsOnStep1() {}
-function filterManualSuggestions() {}
+
 function enableWatchedAndSpin() {
 state.includeWatched = true;
 document.getElementById('includeWatchedToggle').checked = true;
 saveToStorage();
 startSpin();
 }
+
 function showToast(msg) {
 const c = document.getElementById('toastContainer');
 const toast = document.createElement('div');
