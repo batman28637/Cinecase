@@ -8,775 +8,104 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="CineCase">
 <meta name="theme-color" content="#0b0e14">
-<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Cdefs%3E%3ClinearGradient id='bg' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0%25' stop-color='%23131822'/%3E%3Cstop offset='100%25' stop-color='%230b0e14'/%3E%3C/linearGradient%3E%3ClinearGradient id='gold' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0%25' stop-color='%23fbbf24'/%3E%3Cstop offset='50%25' stop-color='%23f97316'/%3E%3Cstop offset='100%25' stop-color='%23ef4444'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='180' height='180' rx='40' fill='url(%23bg)'/%3E%3Crect x='10' y='10' width='160' height='160' rx='32' fill='none' stroke='url(%23gold)' stroke-width='6'/%3E%3Ctext x='90' y='102' font-size='76' text-anchor='middle'%3E%F0%9F%8E%AC%3C/text%3E%3Ctext x='90' y='148' font-family='sans-serif' font-weight='900' font-size='22' fill='%23ffd700' text-anchor='middle' letter-spacing='2'%3ECINECASE%3C/text%3E%3C/svg%3E">
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Rajdhani:wght@600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 <script>
-tailwind.config = {
-darkMode: 'class',
-theme: {
-extend: {
-fontFamily: {
-sans: ['Inter', 'sans-serif'],
-display: ['Rajdhani', 'sans-serif'],
-},
-colors: {
-csDark: '#0b0e14',
-csPanel: '#131822',
-csCard: '#1a2130',
-csGold: '#ffd700',
-csRed: '#eb4b4b',
-csPink: '#d32ce6',
-csPurple: '#8847ff',
-csBlue: '#4b69ff',
-}
-}
-}
-}
+tailwind.config={darkMode:'class',theme:{extend:{fontFamily:{sans:['Inter','sans-serif'],display:['Rajdhani','sans-serif']},colors:{csDark:'#0b0e14',csPanel:'#131822',csCard:'#1a2130',csGold:'#ffd700',csRed:'#eb4b4b',csPink:'#d32ce6',csPurple:'#8847ff',csBlue:'#4b69ff'}}}}
 </script>
 <style>
-body {
-background-color: #0b0e14;
-color: #f1f5f9;
-background-image:
-radial-gradient(circle at 15% 15%, rgba(75, 105, 255, 0.08) 0%, transparent 45%),
-radial-gradient(circle at 85% 85%, rgba(235, 75, 75, 0.08) 0%, transparent 45%);
-min-height: 100vh;
-min-height: 100dvh;
-overflow-x: hidden;
--webkit-tap-highlight-color: transparent;
--webkit-touch-callout: none;
-user-select: none;
-padding-bottom: env(safe-area-inset-bottom);
-}
-input, textarea {
-user-select: text;
--webkit-user-select: text;
-}
-.safe-header {
-padding-top: max(0.75rem, env(safe-area-inset-top));
-}
-.roulette-mask {
-mask-image: linear-gradient(to right, transparent 0%, black 12%, black 88%, transparent 100%);
--webkit-mask-image: linear-gradient(to right, transparent 0%, black 12%, black 88%, transparent 100%);
-}
-::-webkit-scrollbar { width: 6px; height: 6px; }
-::-webkit-scrollbar-track { background: #0b0e14; }
-::-webkit-scrollbar-thumb { background: #2a3447; border-radius: 9999px; }
-@keyframes needlePulse {
-0%, 100% { filter: drop-shadow(0 0 6px rgba(255, 215, 0, 0.8)); }
-50% { filter: drop-shadow(0 0 14px rgba(255, 215, 0, 1)); }
-}
-.needle-glow { animation: needlePulse 2s infinite; }
+body{background:#0b0e14;color:#f1f5f9;background-image:radial-gradient(circle at 15% 15%,rgba(75,105,255,.08),transparent 45%),radial-gradient(circle at 85% 85%,rgba(235,75,75,.08),transparent 45%);min-height:100vh;min-height:100dvh;overflow-x:hidden;-webkit-tap-highlight-color:transparent;-webkit-touch-callout:none;user-select:none;padding-bottom:env(safe-area-inset-bottom)}
+input,textarea{user-select:text;-webkit-user-select:text}.safe-header{padding-top:max(.75rem,env(safe-area-inset-top))}.roulette-mask{mask-image:linear-gradient(to right,transparent 0%,black 12%,black 88%,transparent 100%);-webkit-mask-image:linear-gradient(to right,transparent 0%,black 12%,black 88%,transparent 100%)}
+::-webkit-scrollbar{width:6px;height:6px}::-webkit-scrollbar-track{background:#0b0e14}::-webkit-scrollbar-thumb{background:#2a3447;border-radius:9999px}@keyframes needlePulse{0%,100%{filter:drop-shadow(0 0 6px rgba(255,215,0,.8))}50%{filter:drop-shadow(0 0 14px rgba(255,215,0,1))}}.needle-glow{animation:needlePulse 2s infinite}
 </style>
 </head>
 <body class="antialiased selection:bg-amber-500/30 selection:text-amber-200 flex flex-col">
-<!-- Header -->
 <header class="sticky top-0 z-30 bg-[#0b0e14]/90 backdrop-blur-md border-b border-slate-800/80 safe-header">
 <div class="max-w-6xl mx-auto px-4 pb-3 flex flex-wrap items-center justify-between gap-2 sm:gap-3">
 <div class="flex items-center gap-3">
-<button onclick="resetToStep1()" class="flex items-center gap-3 text-left group focus:outline-none active:scale-95 transition-transform">
-<div class="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-400 via-orange-500 to-red-600 p-[2px] shadow-lg shadow-amber-500/20 group-hover:scale-105 transition-transform">
-<div class="w-full h-full bg-[#131822] rounded-[10px] flex items-center justify-center text-xl">🎬</div>
-</div>
-<div>
-<h1 class="font-display font-extrabold text-xl sm:text-2xl tracking-wider uppercase bg-gradient-to-r from-white via-slate-200 to-amber-300 bg-clip-text text-transparent">
-CineCase <span class="text-amber-400">CS:2</span>
-</h1>
-<p class="text-[11px] text-slate-400 hidden sm:block">Film- & Serien-Roulette für euren Abend</p>
-</div>
-</button>
-<button onclick="openApiStatusModal()" id="apiStatusBtn" class="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-[#131822] border border-slate-700/80 hover:border-amber-500/50 text-xs font-semibold text-slate-200 transition active:scale-95 shadow-sm">
-<span id="apiStatusDot" class="w-2.5 h-2.5 rounded-full bg-slate-400"></span>
-<span id="apiStatusText">API prüfen...</span>
-</button>
+<button onclick="resetToStep1()" class="flex items-center gap-3 text-left group focus:outline-none active:scale-95 transition-transform"><div class="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-400 via-orange-500 to-red-600 p-[2px]"><div class="w-full h-full bg-[#131822] rounded-[10px] flex items-center justify-center text-xl">🎬</div></div><div><h1 class="font-display font-extrabold text-xl sm:text-2xl tracking-wider uppercase bg-gradient-to-r from-white via-slate-200 to-amber-300 bg-clip-text text-transparent">CineCase <span class="text-amber-400">CS:2</span></h1><p class="text-[11px] text-slate-400 hidden sm:block">Film- & Serien-Roulette für euren Abend</p></div></button>
+<button onclick="openApiStatusModal()" id="apiStatusBtn" class="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-[#131822] border border-slate-700/80 text-xs font-semibold"><span id="apiStatusDot" class="w-2.5 h-2.5 rounded-full bg-slate-400"></span><span id="apiStatusText">API prüfen...</span></button>
 </div>
 <div class="flex items-center gap-2 sm:gap-3">
-<label class="flex items-center gap-2 bg-[#131822] border border-slate-800 px-3 py-2 rounded-xl cursor-pointer hover:border-slate-700 transition select-none min-h-[42px]">
-<div class="relative inline-flex items-center">
-<input type="checkbox" id="includeWatchedToggle" class="sr-only peer" onchange="toggleIncludeWatched()">
-<div class="w-9 h-5 bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-amber-500"></div>
-</div>
-<span class="text-xs sm:text-sm font-medium text-slate-300">
-<span class="hidden lg:inline">Bereits geschaute einbeziehen</span>
-<span class="lg:hidden">Geschaute inkl.</span>
-</span>
-</label>
-<button id="muteBtn" onclick="toggleMute()" class="px-3 py-2 rounded-xl bg-[#131822] border border-slate-800 text-slate-300 hover:text-white hover:border-slate-700 transition min-h-[42px] flex items-center gap-1.5 active:scale-95">
-<span id="muteIcon" class="text-base leading-none">🔊</span>
-</button>
-<button onclick="openHistoryModal()" class="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-[#131822] border border-slate-800 hover:border-amber-500/50 text-slate-200 transition shadow-sm min-h-[42px] active:scale-95">
-<span class="text-base leading-none">🕒</span>
-<span id="historyBadge" class="px-1.5 py-0.5 text-xs font-bold rounded-md bg-amber-500/20 text-amber-400">0</span>
-</button>
-<button id="settingsBtn" onclick="openSettingsModal()" class="relative px-3.5 py-2 rounded-xl bg-[#131822] border border-amber-500/40 hover:border-amber-400 text-amber-300 hover:text-amber-200 transition min-h-[42px] flex items-center gap-1.5 active:scale-95 shadow-sm">
-<span class="text-base leading-none">⚙️</span>
-<span id="settingsDotMobile" class="sm:hidden absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-amber-400"></span>
-</button>
-</div>
-</div>
+<label class="flex items-center gap-2 bg-[#131822] border border-slate-800 px-3 py-2 rounded-xl cursor-pointer min-h-[42px]"><input type="checkbox" id="includeWatchedToggle" class="w-4 h-4 accent-amber-500" onchange="toggleIncludeWatched()"><span class="text-xs sm:text-sm font-medium text-slate-300"><span class="hidden lg:inline">Bereits gesehene einbeziehen</span><span class="lg:hidden">Gesehene inkl.</span></span></label>
+<button id="muteBtn" onclick="toggleMute()" class="px-3 py-2 rounded-xl bg-[#131822] border border-slate-800 text-slate-300 min-h-[42px]"><span id="muteIcon">🔊</span></button>
+<button onclick="openHistoryModal()" class="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-[#131822] border border-slate-800 text-slate-200 min-h-[42px]"><span>🕒</span><span id="historyBadge" class="px-1.5 py-0.5 text-xs font-bold rounded-md bg-amber-500/20 text-amber-400">0</span></button>
+<button id="settingsBtn" onclick="openSettingsModal()" class="relative px-3.5 py-2 rounded-xl bg-[#131822] border border-amber-500/40 text-amber-300 min-h-[42px]"><span>⚙️</span></button>
+</div></div>
 </header>
-<!-- Breadcrumb -->
-<div id="breadcrumbBar" class="hidden bg-[#131822]/60 border-b border-slate-800/60">
-<div class="max-w-6xl mx-auto px-4 py-2.5 flex items-center justify-between text-xs sm:text-sm">
-<div class="flex items-center gap-2 text-slate-400">
-<button onclick="resetToStep1()" class="hover:text-amber-400 transition">🏠 Start</button>
-<span>/</span>
-<button id="crumbType" onclick="goToStep2()" class="font-semibold text-slate-200 hover:text-amber-400 transition">Film</button>
-<span id="crumbSep2" class="hidden">/</span>
-<span id="crumbCategory" class="hidden font-semibold text-amber-400">Action</span>
-</div>
-<div class="flex items-center gap-3">
-<button onclick="shuffleCurrentPool()" class="text-xs text-amber-400 hover:text-amber-300 bg-amber-500/10 border border-amber-500/30 px-2.5 py-1 rounded-lg transition active:scale-95">🎲 Pool shufflen</button>
-<div id="poolCounter" class="text-xs text-slate-400 bg-slate-800/70 px-2.5 py-1 rounded-lg">Verfügbar: <span class="text-white font-bold">0</span></div>
-</div>
-</div>
-</div>
-<!-- Main -->
+<div id="breadcrumbBar" class="hidden bg-[#131822]/60 border-b border-slate-800/60"><div class="max-w-6xl mx-auto px-4 py-2.5 flex items-center justify-between text-xs sm:text-sm"><div class="flex items-center gap-2 text-slate-400"><button onclick="resetToStep1()" class="hover:text-amber-400">🏠 Start</button><span>/</span><button id="crumbType" onclick="goToStep2()" class="font-semibold text-slate-200">Film</button><span id="crumbSep2" class="hidden">/</span><span id="crumbCategory" class="hidden font-semibold text-amber-400">Action</span></div><div class="flex items-center gap-3"><button onclick="shuffleCurrentPool()" class="text-xs text-amber-400 bg-amber-500/10 border border-amber-500/30 px-2.5 py-1 rounded-lg">🎲 Pool shufflen</button><div id="poolCounter" class="text-xs text-slate-400 bg-slate-800/70 px-2.5 py-1 rounded-lg">Verfügbar: <span class="text-white font-bold">0</span></div></div></div></div>
 <main class="flex-grow max-w-6xl w-full mx-auto px-4 py-6 sm:py-10 flex flex-col justify-center">
-<!-- Step 1 -->
-<section id="step1Section" class="transition-all duration-300">
-<div class="text-center max-w-2xl mx-auto mb-8 sm:mb-12">
-<span class="inline-block px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs font-bold uppercase tracking-widest mb-3">Schritt 1 von 3</span>
-<h2 class="font-display text-3xl sm:text-5xl font-extrabold uppercase tracking-wide text-white mb-3">Worauf habt ihr heute Lust?</h2>
-<p class="text-slate-400 text-sm sm:text-base">Wählt Film oder Serie und öffnet eure Mystery-Case!</p>
-</div>
-<div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
-<button onclick="selectMediaType('movie')" class="group relative overflow-hidden rounded-3xl bg-[#131822] border-2 border-slate-800 hover:border-amber-400 p-8 text-left transition-all hover:-translate-y-1.5">
-<div class="flex items-center justify-between mb-6">
-<div class="w-16 h-16 rounded-2xl bg-amber-500/20 border border-amber-500/30 flex items-center justify-center text-4xl">🍿</div>
-<span class="px-3 py-1 rounded-lg bg-slate-800 text-xs font-bold text-amber-400 uppercase">Movie Case</span>
-</div>
-<h3 class="font-display text-3xl font-extrabold text-white uppercase mb-2">Film schauen</h3>
-<p class="text-slate-400 text-sm mb-6">Abgeschlossene Storys für einen Abend.</p>
-<div class="flex items-center justify-between text-xs text-slate-300 pt-4 border-t border-slate-800">
-<span>Filme bereit</span>
-<span class="text-amber-400">Auswählen →</span>
-</div>
-</button>
-<button onclick="selectMediaType('tv')" class="group relative overflow-hidden rounded-3xl bg-[#131822] border-2 border-slate-800 hover:border-purple-400 p-8 text-left transition-all hover:-translate-y-1.5">
-<div class="flex items-center justify-between mb-6">
-<div class="w-16 h-16 rounded-2xl bg-purple-500/20 border border-purple-500/30 flex items-center justify-center text-4xl">📺</div>
-<span class="px-3 py-1 rounded-lg bg-slate-800 text-xs font-bold text-purple-400 uppercase">Series Case</span>
-</div>
-<h3 class="font-display text-3xl font-extrabold text-white uppercase mb-2">Serie starten</h3>
-<p class="text-slate-400 text-sm mb-6">Binge-Potential für gemeinsame Abende.</p>
-<div class="flex items-center justify-between text-xs text-slate-300 pt-4 border-t border-slate-800">
-<span>Serien bereit</span>
-<span class="text-purple-400">Auswählen →</span>
-</div>
-</button>
-</div>
-</section>
-<!-- Step 2 -->
-<section id="step2Section" class="hidden transition-all duration-300">
-<div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">
-<div>
-<span class="inline-block px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/30 text-blue-400 text-xs font-bold uppercase mb-2">Schritt 2 von 3</span>
-<h2 id="step2Title" class="font-display text-3xl sm:text-4xl font-extrabold uppercase text-white">Welche Kategorie?</h2>
-</div>
-<button onclick="resetToStep1()" class="px-4 py-2 rounded-xl bg-[#131822] border border-slate-700 text-slate-300 text-xs font-semibold">← Wechseln</button>
-</div>
-<div id="categoryGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
-</section>
-<!-- Step 3 -->
-<section id="step3Section" class="hidden transition-all duration-300">
-<div class="flex flex-wrap items-center justify-between gap-4 mb-6">
-<div>
-<div class="flex items-center gap-2 mb-1">
-<span id="caseBadgeIcon" class="text-2xl">🔥</span>
-<span class="text-xs font-bold uppercase tracking-widest text-amber-400">Cinema Case</span>
-</div>
-<h2 id="caseTitle" class="font-display text-2xl sm:text-4xl font-extrabold uppercase text-white">Case</h2>
-</div>
-<button onclick="goToStep2()" class="px-3.5 py-2 rounded-xl bg-[#131822] border border-slate-700 text-slate-300 text-xs font-semibold">← Kategorie</button>
-</div>
-<div id="emptyPoolBanner" class="hidden mb-6 p-4 rounded-2xl bg-amber-500/10 border border-amber-500/40 flex items-center justify-between gap-4">
-<div>
-<h4 class="font-bold text-amber-300 text-sm">Alle Titel in dieser Kategorie bereits geschaut!</h4>
-<p class="text-xs text-slate-300">Aktiviert „Bereits geschaute einbeziehen“.</p>
-</div>
-<button onclick="enableWatchedAndSpin()" class="px-4 py-2 rounded-xl bg-amber-500 text-slate-950 font-bold text-xs">Trotzdem spinnen</button>
-</div>
-<div class="relative bg-[#0f131c] border-2 border-slate-800 rounded-3xl p-3 sm:p-5 shadow-2xl mb-6">
-<div id="rouletteViewport" class="relative w-full h-48 sm:h-56 bg-[#080a0f] rounded-2xl border border-slate-800 overflow-hidden roulette-mask">
-<div class="absolute top-0 bottom-0 left-1/2 -translate-x-1/2 w-[3px] bg-gradient-to-b from-amber-400 via-red-500 to-amber-400 z-20 needle-glow pointer-events-none"></div>
-<div id="rouletteTrack" class="absolute top-0 bottom-0 left-0 flex items-center gap-3 px-4 will-change-transform"></div>
-</div>
-<div class="mt-5 flex flex-wrap items-center justify-center gap-3">
-<button id="spinBtn" onclick="startSpin()" class="flex-grow sm:flex-grow-0 px-8 py-4 rounded-2xl bg-gradient-to-r from-emerald-500 via-green-500 to-teal-500 text-slate-950 font-display font-extrabold text-xl uppercase shadow-lg shadow-emerald-500/25">
-<span id="spinBtnText">Case öffnen (Spin starten)</span>
-</button>
-<button onclick="shuffleCurrentPool()" class="px-5 py-4 rounded-2xl bg-[#1a2130] border border-slate-700 text-slate-200 font-bold text-sm hover:border-amber-400 transition flex items-center gap-2">
-<span>🎲</span> Shufflen
-</button>
-</div>
-</div>
-<div id="winnerCard" class="hidden">
-<div id="winnerCardInner" class="rounded-3xl bg-[#131822] border-2 border-slate-700 p-6 sm:p-8 shadow-2xl relative overflow-hidden">
-<div id="winnerGlowBg" class="absolute -right-20 -top-20 w-72 h-72 rounded-full blur-3xl opacity-20 pointer-events-none bg-amber-400"></div>
-<div class="flex flex-col lg:flex-row justify-between gap-6 relative z-10">
-<div class="flex flex-col sm:flex-row items-start gap-5 max-w-3xl">
-<div id="winnerVisualContainer" class="w-28 h-40 sm:w-32 sm:h-48 shrink-0 rounded-2xl bg-[#1a2130] border border-slate-700 flex items-center justify-center overflow-hidden shadow-xl mx-auto">
-<img id="winnerPosterImg" src="" alt="Poster" class="w-full h-full object-cover hidden" onerror="this.classList.add('hidden'); document.getElementById('winnerEmoji').classList.remove('hidden');">
-<span id="winnerEmoji" class="text-5xl">🎬</span>
-</div>
-<div class="space-y-3">
-<div class="flex flex-wrap items-center gap-2">
-<span id="winnerRarityBadge" class="px-3 py-1 rounded-lg text-xs font-extrabold uppercase bg-amber-500/20 text-amber-400">Highlight</span>
-<span id="winnerMediaTypeBadge" class="px-2.5 py-1 rounded-lg text-xs bg-slate-800 text-slate-300">Titel</span>
-<span id="winnerYear" class="px-2.5 py-1 rounded-lg text-xs bg-slate-800 text-slate-300">2024</span>
-<span class="px-2.5 py-1 rounded-lg text-xs bg-amber-500/15 text-amber-400">⭐ <span id="winnerRating">8.0</span></span>
-</div>
-<h3 id="winnerTitle" class="font-display text-3xl sm:text-4xl font-extrabold text-white">Titel</h3>
-<p id="winnerVibe" class="text-sm font-medium text-amber-400">Vibe</p>
-<p id="winnerDesc" class="text-slate-300 text-sm">Beschreibung</p>
-</div>
-</div>
-<div class="flex flex-col sm:flex-row lg:flex-col gap-3 shrink-0 lg:w-64">
-<button id="markWatchedBtn" onclick="markCurrentAsWatched()" class="w-full px-5 py-3.5 rounded-2xl bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 font-bold text-sm shadow-lg">
-<span id="markWatchedText">Als geschaut markieren</span>
-</button>
-<button onclick="startSpin()" class="w-full px-5 py-3.5 rounded-2xl bg-[#1e2638] border border-slate-600 text-white font-bold text-sm">Nochmal spinnen</button>
-</div>
-</div>
-</div>
-</div>
+<section id="step1Section" class="transition-all duration-300"><div class="text-center max-w-2xl mx-auto mb-8 sm:mb-12"><span class="inline-block px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs font-bold uppercase mb-3">Schritt 1 von 3</span><h2 class="font-display text-3xl sm:text-5xl font-extrabold uppercase text-white mb-3">Worauf habt ihr heute Lust?</h2><p class="text-slate-400">Wählt Film oder Serie und öffnet eure Mystery-Case!</p></div><div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto"><button onclick="selectMediaType('movie')" class="group rounded-3xl bg-[#131822] border-2 border-slate-800 hover:border-amber-400 p-8 text-left transition-all"><div class="text-5xl mb-5">🍿</div><h3 class="font-display text-3xl font-extrabold text-white uppercase">Film schauen</h3><p class="text-slate-400 mt-2">Abgeschlossene Storys für einen Abend.</p></button><button onclick="selectMediaType('tv')" class="group rounded-3xl bg-[#131822] border-2 border-slate-800 hover:border-purple-400 p-8 text-left transition-all"><div class="text-5xl mb-5">📺</div><h3 class="font-display text-3xl font-extrabold text-white uppercase">Serie starten</h3><p class="text-slate-400 mt-2">Binge-Potential für gemeinsame Abende.</p></button></div></section>
+<section id="step2Section" class="hidden transition-all duration-300"><div class="flex items-end justify-between mb-8"><div><span class="text-blue-400 text-xs font-bold uppercase">Schritt 2 von 3</span><h2 id="step2Title" class="font-display text-3xl sm:text-4xl font-extrabold uppercase text-white">Welche Kategorie?</h2></div><button onclick="resetToStep1()" class="px-4 py-2 rounded-xl bg-[#131822] border border-slate-700 text-slate-300 text-xs">← Wechseln</button></div><div id="categoryGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div></section>
+<section id="step3Section" class="hidden transition-all duration-300"><div class="flex items-center justify-between mb-6"><div><div class="flex items-center gap-2"><span id="caseBadgeIcon" class="text-2xl">🔥</span><span class="text-xs font-bold uppercase text-amber-400">Cinema Case</span></div><h2 id="caseTitle" class="font-display text-2xl sm:text-4xl font-extrabold uppercase text-white">Case</h2></div><button onclick="goToStep2()" class="px-3.5 py-2 rounded-xl bg-[#131822] border border-slate-700 text-slate-300 text-xs">← Kategorie</button></div>
+<div id="emptyPoolBanner" class="hidden mb-6 p-4 rounded-2xl bg-amber-500/10 border border-amber-500/40 flex items-center justify-between gap-4"><div><h4 class="font-bold text-amber-300 text-sm">Alle Titel in dieser Kategorie wurden bereits geschaut!</h4><p class="text-xs text-slate-300">Aktiviere „Bereits gesehene einbeziehen“.</p></div><button onclick="enableWatchedAndSpin()" class="px-4 py-2 rounded-xl bg-amber-500 text-slate-950 font-bold text-xs">Trotzdem spinnen</button></div>
+<div class="relative bg-[#0f131c] border-2 border-slate-800 rounded-3xl p-3 sm:p-5 shadow-2xl mb-6"><div id="rouletteViewport" class="relative w-full h-48 sm:h-56 bg-[#080a0f] rounded-2xl border border-slate-800 overflow-hidden roulette-mask"><div class="absolute top-0 bottom-0 left-1/2 -translate-x-1/2 w-[3px] bg-gradient-to-b from-amber-400 via-red-500 to-amber-400 z-20 needle-glow"></div><div id="rouletteTrack" class="absolute top-0 bottom-0 left-0 flex items-center gap-3 px-4 will-change-transform"></div></div><div class="mt-5 flex flex-wrap items-center justify-center gap-3"><button id="spinBtn" onclick="startSpin()" class="flex-grow px-8 py-4 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 font-display font-extrabold"><span id="spinBtnText">Case öffnen (Spin starten)</span></button><button onclick="shuffleCurrentPool()" class="px-5 py-4 rounded-2xl bg-[#1a2130] border border-slate-700 text-white font-bold text-sm">🎲 Shufflen</button></div></div>
+<div id="winnerCard" class="hidden"><div class="rounded-3xl bg-[#131822] border-2 border-slate-700 p-6 sm:p-8"><div class="flex flex-col lg:flex-row justify-between gap-6"><div class="flex flex-col sm:flex-row gap-5"><div class="w-28 h-40 sm:w-32 sm:h-48 shrink-0 rounded-2xl bg-[#1a2130] border border-slate-700 flex items-center justify-center overflow-hidden mx-auto"><img id="winnerPosterImg" src="" alt="Poster" class="w-full h-full object-cover hidden"><span id="winnerEmoji" class="text-5xl">🎬</span></div><div class="space-y-3"><div class="flex flex-wrap gap-2"><span class="px-3 py-1 rounded-lg text-xs font-extrabold bg-amber-500/20 text-amber-400">Highlight</span><span id="winnerMediaTypeBadge" class="px-2.5 py-1 rounded-lg text-xs bg-slate-800 text-slate-300">Titel</span><span id="winnerYear" class="px-2.5 py-1 rounded-lg text-xs bg-slate-800 text-slate-300">2024</span><span class="px-2.5 py-1 rounded-lg text-xs bg-amber-500/15 text-amber-400">⭐ <span id="winnerRating">8.0</span></span></div><h3 id="winnerTitle" class="font-display text-3xl sm:text-4xl font-extrabold text-white">Titel</h3><p id="winnerVibe" class="text-sm text-amber-400">Vibe</p><p id="winnerDesc" class="text-slate-300 text-sm">Beschreibung</p></div></div><div class="flex flex-col sm:flex-row lg:flex-col gap-3 lg:w-64"><button id="markWatchedBtn" onclick="markCurrentAsWatched()" class="w-full px-5 py-3.5 rounded-2xl bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 font-bold text-sm"><span id="markWatchedText">Als gesehen markieren</span></button><button onclick="startSpin()" class="w-full px-5 py-3.5 rounded-2xl bg-[#1e2638] border border-slate-600 text-white font-bold text-sm">Nochmal spinnen</button></div></div></div></div>
 </section>
 </main>
-<!-- API Status Modal -->
-<div id="apiStatusModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4">
-<div onclick="closeApiStatusModal()" class="absolute inset-0 bg-black/85 backdrop-blur-sm"></div>
-<div class="relative w-full max-w-md rounded-3xl bg-[#131822] border border-slate-700 shadow-2xl p-6 z-10 space-y-5">
-<div class="flex items-center justify-between border-b border-slate-800 pb-3">
-<h3 class="font-display text-xl font-extrabold text-white">🔌 TMDB API Status</h3>
-<button onclick="closeApiStatusModal()" class="w-8 h-8 rounded-xl bg-slate-800 text-slate-300 flex items-center justify-center">✕</button>
-</div>
-<div class="space-y-4">
-<div class="p-4 rounded-2xl bg-[#1a2130] border border-slate-800 flex items-center gap-3">
-<div id="modalStatusDot" class="w-4 h-4 rounded-full bg-slate-400 shrink-0"></div>
-<div>
-<div id="modalStatusTitle" class="font-bold text-sm text-white">Prüfe Status...</div>
-<div id="modalStatusDesc" class="text-xs text-slate-400 mt-0.5">Bitte warten</div>
-</div>
-</div>
-<div class="text-xs text-slate-300 space-y-2 bg-[#0b0e14] p-3.5 rounded-xl border border-slate-800">
-<p><strong>Wie funktioniert das?</strong></p>
-<p>• <strong>LIVE TMDB:</strong> Die App ruft aktuelle Daten (mit europäischem Region-Filter) direkt über deinen API-Key ab.</p>
-<p>• <strong>Datenbank offline:</strong> Falls kein Key hinterlegt ist oder die API blockiert, nutzt die App automatisch die riesige lokale Offline-Datenbank.</p>
-</div>
-</div>
-<button onclick="closeApiStatusModal()" class="w-full py-3 rounded-xl bg-amber-500 text-slate-950 font-bold text-sm">Verstanden</button>
-</div>
-</div>
-<!-- History Modal -->
-<div id="historyModal" class="fixed inset-0 z-50 hidden">
-<div onclick="closeHistoryModal()" class="absolute inset-0 bg-black/75 backdrop-blur-sm"></div>
-<div class="absolute right-0 top-0 bottom-0 w-full max-w-md bg-[#131822] border-l border-slate-800 shadow-2xl flex flex-col z-10">
-<div class="p-5 border-b border-slate-800 flex items-center justify-between">
-<h3 class="font-display text-2xl font-extrabold text-white">📜 Bereits geschaut</h3>
-<button onclick="closeHistoryModal()" class="w-9 h-9 rounded-xl bg-slate-800 text-slate-300">✕</button>
-</div>
-<div id="historyList" class="flex-grow overflow-y-auto p-4 space-y-2.5"></div>
-<div class="p-4 border-t border-slate-800 bg-[#0f131c] flex items-center justify-between">
-<span id="historyTotalText" class="text-xs text-slate-400">0 Titel</span>
-<button onclick="clearAllHistory()" class="text-xs text-red-400">Alle löschen</button>
-</div>
-</div>
-</div>
-<!-- Settings Modal -->
-<div id="settingsModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4">
-<div onclick="closeSettingsModal()" class="absolute inset-0 bg-black/80 backdrop-blur-sm"></div>
-<div class="relative w-full max-w-xl max-h-[90vh] overflow-y-auto rounded-3xl bg-[#131822] border border-slate-700 shadow-2xl p-6 z-10 space-y-6">
-<div class="flex items-center justify-between border-b border-slate-800 pb-4">
-<h3 class="font-display text-2xl font-extrabold text-white">⚙️ Einstellungen</h3>
-<button onclick="closeSettingsModal()" class="w-9 h-9 rounded-xl bg-slate-800 text-slate-300">✕</button>
-</div>
-<div class="space-y-3">
-<label class="text-sm font-bold text-white">TMDB API-Key (Für Live-Daten & Poster)</label>
-<div class="flex gap-2">
-<input type="text" id="tmdbApiKeyInput" placeholder="API Key..." class="flex-grow bg-[#0b0e14] border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-white font-mono">
-<button onclick="saveAndTestTmdbKey()" id="saveTmdbBtn" class="px-4 py-2.5 rounded-xl bg-amber-500 text-slate-950 font-bold text-sm shrink-0">Speichern</button>
-</div>
-<small class="text-slate-400 text-xs block">Trage hier deinen kostenlosen Key von themoviedb.org ein.</small>
-</div>
-<div class="pt-4 border-t border-slate-800 space-y-3">
-<label class="text-sm font-bold text-white">Sync-Code</label>
-<div class="flex gap-2">
-<input type="text" id="syncCodeField" class="flex-grow bg-[#0b0e14] border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-300 font-mono">
-<button onclick="copySyncCode()" class="px-3 py-2 rounded-xl bg-slate-800 text-white text-xs">Kopieren</button>
-<button onclick="importSyncCode()" class="px-3 py-2 rounded-xl bg-blue-600 text-white text-xs">Laden</button>
-</div>
-</div>
-</div>
-</div>
-<div id="toastContainer" class="fixed bottom-5 left-1/2 -translate-x-1/2 z-50 flex flex-col items-center gap-2 pointer-events-none"></div>
+<div id="apiStatusModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4"><div onclick="closeApiStatusModal()" class="absolute inset-0 bg-black/85"></div><div class="relative w-full max-w-md rounded-3xl bg-[#131822] border border-slate-700 p-6 z-10"><div class="flex items-center justify-between border-b border-slate-800 pb-3"><h3 class="font-display text-xl font-extrabold">🔌 TMDB API Status</h3><button onclick="closeApiStatusModal()" class="w-8 h-8 rounded-xl bg-slate-800">✕</button></div><div class="my-5 p-4 rounded-2xl bg-[#1a2130] flex items-center gap-3"><div id="modalStatusDot" class="w-4 h-4 rounded-full bg-slate-400"></div><div><div id="modalStatusTitle" class="font-bold text-sm">Prüfe Status...</div><div id="modalStatusDesc" class="text-xs text-slate-400">Bitte warten</div></div></div><button onclick="closeApiStatusModal()" class="w-full py-3 rounded-xl bg-amber-500 text-slate-950 font-bold">Verstanden</button></div></div>
+<div id="historyModal" class="fixed inset-0 z-50 hidden"><div onclick="closeHistoryModal()" class="absolute inset-0 bg-black/75"></div><div class="absolute right-0 top-0 bottom-0 w-full max-w-md bg-[#131822] border-l border-slate-800 flex flex-col z-10"><div class="p-5 border-b border-slate-800 flex justify-between"><h3 class="font-display text-2xl font-extrabold">📜 Bereits gesehen</h3><button onclick="closeHistoryModal()" class="w-9 h-9 rounded-xl bg-slate-800">✕</button></div><div id="historyList" class="flex-grow overflow-y-auto p-4 space-y-2.5"></div><div class="p-4 border-t border-slate-800 flex justify-between"><span id="historyTotalText" class="text-xs text-slate-400">0 Titel</span><button onclick="clearAllHistory()" class="text-xs text-red-400">Alle löschen</button></div></div></div>
+<div id="settingsModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4"><div onclick="closeSettingsModal()" class="absolute inset-0 bg-black/80"></div><div class="relative w-full max-w-xl max-h-[90vh] overflow-y-auto rounded-3xl bg-[#131822] border border-slate-700 p-6 z-10"><div class="flex justify-between border-b border-slate-800 pb-4"><h3 class="font-display text-2xl font-extrabold">⚙️ Einstellungen</h3><button onclick="closeSettingsModal()" class="w-9 h-9 rounded-xl bg-slate-800">✕</button></div><div class="mt-5"><label class="text-sm font-bold">TMDB API-Key</label><div class="flex gap-2 mt-2"><input type="password" id="tmdbApiKeyInput" autocomplete="off" placeholder="API-Key…" class="flex-grow min-w-0 bg-[#0b0e14] border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm font-mono"><button onclick="saveAndTestTmdbKey()" id="saveTmdbBtn" class="px-4 rounded-xl bg-amber-500 text-slate-950 font-bold text-sm">Testen & speichern</button></div><small class="text-slate-400 text-xs block mt-2">Der Key bleibt nur in deinem Browser gespeichert.</small></div><div class="mt-5 pt-4 border-t border-slate-800"><label class="text-sm font-bold">Sync-Code</label><p class="text-xs text-slate-400 mt-1 mb-2">Synchronisiert nur den Verlauf — niemals den API-Key.</p><div class="flex gap-2"><input type="text" id="syncCodeField" class="flex-grow min-w-0 bg-[#0b0e14] border border-slate-700 rounded-xl px-3 py-2 text-xs font-mono"><button onclick="copySyncCode()" class="px-3 rounded-xl bg-slate-800 text-xs">Kopieren</button><button onclick="importSyncCode()" class="px-3 rounded-xl bg-blue-600 text-xs">Laden</button></div></div></div></div>
+<div id="toastContainer" class="fixed bottom-5 left-1/2 -translate-x-1/2 z-[60] flex flex-col items-center gap-2 pointer-events-none"></div>
 <script>
-const CATEGORIES = [
-{ id: 'top', name: 'Die beliebtesten', icon: '🏆', desc: 'Die absoluten Top-Titel mit höchster Bewertung & Popularität.', genreId: 'top' },
-{ id: 'all', name: 'Beliebt / Mix', icon: '🎲', desc: 'Die besten Highlights quer durch alle Genres.', genreId: null },
-{ id: 'action', name: 'Action & Abenteuer', icon: '💥', desc: 'Adrenalin und Verfolgungsjagden.', genreId: { movie: '28', tv: '10759' } },
-{ id: 'comedy', name: 'Komödie', icon: '😂', desc: 'Zum Abschalten und Lachen.', genreId: { movie: '35', tv: '35' } },
-{ id: 'scifi', name: 'Sci-Fi & Fantasy', icon: '🚀', desc: 'Fremde Welten und Zukunftsvisionen.', genreId: { movie: '878', tv: '10765' } },
-{ id: 'thriller', name: 'Thriller & Krimi', icon: '🕵️', desc: 'Spannung und krasse Plot-Twists.', genreId: { movie: '53', tv: '80' } },
-{ id: 'horror', name: 'Horror', icon: '👻', desc: 'Gänsehaut für den Filmabend.', genreId: { movie: '27', tv: '9648' } },
-{ id: 'drama', name: 'Drama', icon: '🎭', desc: 'Tiefgründige Geschichten.', genreId: { movie: '18', tv: '18' } },
-{ id: 'romance', name: 'Romantik', icon: '❤️', desc: 'Herzklopfen und Liebesgeschichten.', genreId: { movie: '10749', tv: '10749' } },
-{ id: 'animation', name: 'Animation / Anime', icon: '🎨', desc: 'Visuelle Kunstwerke.', genreId: { movie: '16', tv: '16' } }
-];
+const CATEGORIES=[
+{id:'top',name:'Die beliebtesten',icon:'🏆',desc:'Die absoluten Top-Titel.',genreId:'top'},
+{id:'all',name:'Beliebt / Mix',icon:'🎲',desc:'Die besten Highlights quer durch alle Genres.',genreId:null},
+{id:'action',name:'Action & Abenteuer',icon:'💥',desc:'Adrenalin und Verfolgungsjagden.',genreId:{movie:'28',tv:'10759'}},
+{id:'comedy',name:'Komödie',icon:'😂',desc:'Zum Abschalten und Lachen.',genreId:{movie:'35',tv:'35'}},
+{id:'scifi',name:'Sci-Fi & Fantasy',icon:'🚀',desc:'Fremde Welten und Zukunftsvisionen.',genreId:{movie:'878',tv:'10765'}},
+{id:'thriller',name:'Thriller & Krimi',icon:'🕵️',desc:'Spannung und Plot-Twists.',genreId:{movie:'53',tv:'80'}},
+{id:'horror',name:'Horror',icon:'👻',desc:'Gänsehaut für den Filmabend.',genreId:{movie:'27',tv: '9648'}},
+{id:'drama',name:'Drama',icon:'🎭',desc:'Tiefgründige Geschichten.',genreId:{movie:'18',tv:'18'}},
+{id:'romance',name:'Romantik',icon:'❤️',desc:'Herzklopfen und Liebesgeschichten.',genreId:{movie:'10749',tv:'10749'}},
+{id:'animation',name:'Animation / Anime',icon:'🎨',desc:'Visuelle Kunstwerke.',genreId:{movie:'16',tv:'16'}}];
 
-const FALLBACK_DATABASE = [
-{ id: 101, type: 'movie', cat: 'top', title: 'The Dark Knight', year: '2008', rating: 9.0, poster_path: null, emoji: '🦇', vibe: 'Meisterwerk', overview: 'Batman gegen den Joker.' },
-{ id: 102, type: 'movie', cat: 'top', title: 'Inception', year: '2010', rating: 8.8, poster_path: null, emoji: '🌀', vibe: 'Mind-Bending', overview: 'Diebstahl von Geheimnissen im Traum.' },
-{ id: 103, type: 'movie', cat: 'action', title: 'Mad Max: Fury Road', year: '2015', rating: 8.1, poster_path: null, emoji: '🔥', vibe: 'Adrenalin', overview: 'Postapokalyptische Verfolgungsjagd.' },
-{ id: 104, type: 'movie', cat: 'action', title: 'John Wick', year: '2014', rating: 7.4, poster_path: null, emoji: '🔫', vibe: 'Stylish', overview: 'Ex-Auftragskiller auf Rachefeldzug.' },
-{ id: 105, type: 'movie', cat: 'comedy', title: 'Ziemlich beste Freunde', year: '2011', rating: 8.5, poster_path: null, emoji: '🤝', vibe: 'Herzerwärmend', overview: 'Zwei Welten treffen aufeinander.' },
-{ id: 106, type: 'movie', cat: 'comedy', title: 'Hangover', year: '2009', rating: 7.7, poster_path: null, emoji: '🍻', vibe: 'Chaotisch', overview: 'Junggesellenabschied in Las Vegas.' },
-{ id: 107, type: 'movie', cat: 'scifi', title: 'Interstellar', year: '2014', rating: 8.7, poster_path: null, emoji: '🌌', vibe: 'Episch', overview: 'Reise durch ein Wurmloch im All.' },
-{ id: 108, type: 'movie', cat: 'scifi', title: 'Matrix', year: '1999', rating: 8.7, poster_path: null, emoji: '💊', vibe: 'Legendär', overview: 'Entdeckung der simulierten Realität.' },
-{ id: 109, type: 'movie', cat: 'thriller', title: 'Sieben', year: '1995', rating: 8.6, poster_path: null, emoji: '📦', vibe: 'Düster & Packend', overview: 'Jagd auf Serienmörder.' },
-{ id: 110, type: 'movie', cat: 'horror', title: 'Conjuring', year: '2013', rating: 7.5, poster_path: null, emoji: '👻', vibe: 'Gruselig', overview: 'Paranormale Ermittlungen.' },
-{ id: 111, type: 'movie', cat: 'drama', title: 'Fight Club', year: '1999', rating: 8.8, poster_path: null, emoji: '🧼', vibe: 'Kult', overview: 'Gründung eines Untergrund-Clubs.' },
-{ id: 112, type: 'movie', cat: 'romance', title: 'La La Land', year: '2016', rating: 8.0, poster_path: null, emoji: '🎷', vibe: 'Musikalisch', overview: 'Liebe und Träume in Los Angeles.' },
-{ id: 113, type: 'movie', cat: 'animation', title: 'Spirited Away', year: '2001', rating: 8.6, poster_path: null, emoji: '🐉', vibe: 'Magisch', overview: 'Geheimnisvolle Geisterwelt.' },
+const FALLBACK_DATABASE=[
+{id:101,type:'movie',cat:'top',title:'The Dark Knight',year:'2008',rating:9.0,poster_path:null,emoji:'🦇',vibe:'Meisterwerk',overview:'Batman gegen den Joker.'},{id:102,type:'movie',cat:'top',title:'Inception',year:'2010',rating:8.8,poster_path:null,emoji:'🌀',vibe:'Mind-Bending',overview:'Diebstahl von Geheimnissen im Traum.'},{id:103,type:'movie',cat:'action',title:'Mad Max: Fury Road',year:'2015',rating:8.1,poster_path:null,emoji:'🔥',vibe:'Adrenalin',overview:'Postapokalyptische Verfolgungsjagd.'},{id:104,type:'movie',cat:'action',title:'John Wick',year:'2014',rating:7.4,poster_path:null,emoji:'🔫',vibe:'Stylish',overview:'Ex-Auftragskiller auf Rachefeldzug.'},{id:105,type:'movie',cat:'comedy',title:'Ziemlich beste Freunde',year:'2011',rating:8.5,poster_path:null,emoji:'🤝',vibe:'Herzerwärmend',overview:'Zwei Welten treffen aufeinander.'},{id:106,type:'movie',cat:'comedy',title:'Hangover',year:'2009',rating:7.7,poster_path:null,emoji:'🍻',vibe:'Chaotisch',overview:'Junggesellenabschied in Las Vegas.'},{id:107,type:'movie',cat:'scifi',title:'Interstellar',year:'2014',rating:8.7,poster_path:null,emoji:'🌌',vibe:'Episch',overview:'Reise durch ein Wurmloch im All.'},{id:108,type:'movie',cat:'scifi',title:'Matrix',year:'1999',rating:8.7,poster_path:null,emoji:'💊',vibe:'Legendär',overview:'Entdeckung der simulierten Realität.'},{id:109,type:'movie',cat:'thriller',title:'Sieben',year:'1995',rating:8.6,poster_path:null,emoji:'📦',vibe:'Düster & Packend',overview:'Jagd auf einen Serienmörder.'},{id:110,type:'movie',cat:'horror',title:'Conjuring',year:'2013',rating:7.5,poster_path:null,emoji:'👻',vibe:'Gruselig',overview:'Paranormale Ermittlungen.'},{id:111,type:'movie',cat:'drama',title:'Fight Club',year:'1999',rating:8.8,poster_path:null,emoji:'🧼',vibe:'Kult',overview:'Gründung eines Untergrund-Clubs.'},{id:112,type:'movie',cat:'romance',title:'La La Land',year:'2016',rating:8.0,poster_path:null,emoji:'🎷',vibe:'Musikalisch',overview:'Liebe und Träume in Los Angeles.'},{id:113,type:'movie',cat:'animation',title:'Spirited Away',year:'2001',rating:8.6,poster_path:null,emoji:'🐉',vibe:'Magisch',overview:'Geheimnisvolle Geisterwelt.'},
+{id:201,type:'tv',cat:'top',title:'Breaking Bad',year:'2008',rating:9.5,poster_path:null,emoji:'🧪',vibe:'Meisterwerk',overview:'Chemielehrer wird zum Drogenboss.'},{id:202,type:'tv',cat:'top',title:'Game of Thrones',year:'2011',rating:9.2,poster_path:null,emoji:'👑',vibe:'Episch',overview:'Kampf um den Eisernen Thron.'},{id:203,type:'tv',cat:'all',title:'Stranger Things',year:'2016',rating:8.7,poster_path:null,emoji:'🚲',vibe:'80er-Nostalgie',overview:'Geheimnisvolle Vorkommnisse in Hawkins.'},{id:204,type:'tv',cat:'all',title:'Chernobyl',year:'2019',rating:9.4,poster_path:null,emoji:'☢️',vibe:'Intensiv',overview:'Aufarbeitung der Atomkatastrophe.'},{id:205,type:'tv',cat:'action',title:'The Mandalorian',year:'2019',rating:8.7,poster_path:null,emoji:'🛡️',vibe:'Sci-Fi-Action',overview:'Abenteuer eines Kopfgeldjägers.'},{id:206,type:'tv',cat:'action',title:'The Boys',year:'2019',rating:8.7,poster_path:null,emoji:'⚡',vibe:'Düster & Action',overview:'Kampf gegen korrupte Superhelden.'},{id:207,type:'tv',cat:'comedy',title:'The Office',year:'2005',rating:9.0,poster_path:null,emoji:'📎',vibe:'Zum Totlachen',overview:'Der Büroalltag.'},{id:208,type:'tv',cat:'comedy',title:'Brooklyn Nine-Nine',year:'2013',rating:8.4,poster_path:null,emoji:'👮',vibe:'Witzig & Charmant',overview:'Polizeialltag in New York.'},{id:209,type:'tv',cat:'scifi',title:'Dark',year:'2017',rating:8.7,poster_path:null,emoji:'⏳',vibe:'Komplex & Packend',overview:'Verschwinden in einer deutschen Kleinstadt.'},{id:210,type:'tv',cat:'scifi',title:'The Witcher',year:'2019',rating:8.0,poster_path:null,emoji:'⚔️',vibe:'Fantasy',overview:'Abenteuer eines Hexers.'},{id:211,type:'tv',cat:'thriller',title:'Sherlock',year:'2010',rating:9.1,poster_path:null,emoji:'🔍',vibe:'Genial',overview:'Modernisierte Abenteuer des Detektivs.'},{id:212,type:'tv',cat:'thriller',title:'Narcos',year:'2015',rating:8.8,poster_path:null,emoji:'📦',vibe:'Packend',overview:'Aufstieg der Drogenkartelle.'},{id:213,type:'tv',cat:'horror',title:'The Haunting of Hill House',year:'2018',rating:8.6,poster_path:null,emoji:'🏡',vibe:'Gänsehaut',overview:'Geister aus der Vergangenheit.'},{id:214,type:'tv',cat:'drama',title:'Succession',year:'2018',rating:8.9,poster_path:null,emoji:'💼',vibe:'Intrikat',overview:'Machtkampf um ein Medienimperium.'},{id:215,type:'tv',cat:'romance',title:'Bridgerton',year:'2020',rating:7.4,poster_path:null,emoji:'💌',vibe:'Kostümdrama',overview:'Liebesgeschichten in London.'},{id:216,type:'tv',cat:'animation',title:'Arcane',year:'2021',rating:9.0,poster_path:null,emoji:'🎨',vibe:'Meisterwerk',overview:'Konflikt zweier Städte.'}];
 
-// Serien
-{ id: 201, type: 'tv', cat: 'top', title: 'Breaking Bad', year: '2008', rating: 9.5, poster_path: null, emoji: '🧪', vibe: 'Meisterwerk', overview: 'Chemie-Lehrer wird zum Drogenboss.' },
-{ id: 202, type: 'tv', cat: 'top', title: 'Game of Thrones', year: '2011', rating: 9.2, poster_path: null, emoji: '👑', vibe: 'Episch', overview: 'Kampf um den Eisernen Thron.' },
-{ id: 203, type: 'tv', cat: 'all', title: 'Stranger Things', year: '2016', rating: 8.7, poster_path: null, emoji: '🚲', vibe: '80er Nostalgie', overview: 'Geheimnisvolle Vorkommnisse in Hawkins.' },
-{ id: 204, type: 'tv', cat: 'all', title: 'Chernobyl', year: '2019', rating: 9.4, poster_path: null, emoji: '☢️', vibe: 'Intensiv', overview: 'Aufarbeitung der Atomkatastrophe.' },
-{ id: 205, type: 'tv', cat: 'action', title: 'The Mandalorian', year: '2019', rating: 8.7, poster_path: null, emoji: '🛡️', vibe: 'Sci-Fi Action', overview: 'Abenteuer eines Kopfgeldjägers.' },
-{ id: 206, type: 'tv', cat: 'action', title: 'The Boys', year: '2019', rating: 8.7, poster_path: null, emoji: '⚡', vibe: 'Düster & Action', overview: 'Kampf gegen korrupte Superhelden.' },
-{ id: 207, type: 'tv', cat: 'comedy', title: 'The Office', year: '2005', rating: 9.0, poster_path: null, emoji: '📎', vibe: 'Zum Totlachen', overview: 'Der wahnsinnige Büroalltag.' },
-{ id: 208, type: 'tv', cat: 'comedy', title: 'Brooklyn Nine-Nine', year: '2013', rating: 8.4, poster_path: null, emoji: '👮', vibe: 'Witzig & Charmant', overview: 'Polizeialltag in New York.' },
-{ id: 209, type: 'tv', cat: 'scifi', title: 'Dark', year: '2017', rating: 8.7, poster_path: null, emoji: '⏳', vibe: 'Komplex & Packend', overview: 'Verschwinden in deutscher Kleinstadt.' },
-{ id: 210, type: 'tv', cat: 'scifi', title: 'The Witcher', year: '2019', rating: 8.0, poster_path: null, emoji: '⚔️', vibe: 'Fantasy', overview: 'Abenteuer eines Hexers.' },
-{ id: 211, type: 'tv', cat: 'thriller', title: 'Sherlock', year: '2010', rating: 9.1, poster_path: null, emoji: '🔍', vibe: 'Genial', overview: 'Modernisierte Abenteuer des Detektivs.' },
-{ id: 212, type: 'tv', cat: 'thriller', title: 'Narcos', year: '2015', rating: 8.8, poster_path: null, emoji: '📦', vibe: 'Packend', overview: 'Aufstieg der Drogenkartelle.' },
-{ id: 213, type: 'tv', cat: 'horror', title: 'The Haunting of Hill House', year: '2018', rating: 8.6, poster_path: null, emoji: '🏡', vibe: 'Gänsehaut', overview: 'Geister aus der Vergangenheit.' },
-{ id: 214, type: 'tv', cat: 'drama', title: 'Succession', year: '2018', rating: 8.9, poster_path: null, emoji: '💼', vibe: 'Intrikat', overview: 'Machtkampf um Medienimperium.' },
-{ id: 215, type: 'tv', cat: 'romance', title: 'Bridgerton', year: '2020', rating: 7.4, poster_path: null, emoji: '💌', vibe: 'Kostümdrama', overview: 'Liebesgeschichten in London.' },
-{ id: 216, type: 'tv', cat: 'animation', title: 'Arcane', year: '2021', rating: 9.0, poster_path: null, emoji: '🎨', vibe: 'Meisterwerk', overview: 'Konflikt zweier Städte.' }
-];
+let state={step:1,mediaType:'movie',category:null,watchedItems:[],includeWatched:false,isMuted:false,isSpinning:false,currentWinner:null,rouletteItems:[],tmdbApiKey:'',activePool:[],apiStatus:'checking',apiMessage:'',spinTimeout:null,spinInterval:null};
 
-let state = { step: 1, mediaType: 'movie', category: null, watchedItems: [], includeWatched: false, isMuted: false, isSpinning: false, currentWinner: null, rouletteItems: [], tmdbApiKey: '', activePool: [], apiStatus: 'checking', apiMessage: 'Verbindung wird geprüft...' };
+document.addEventListener('DOMContentLoaded',()=>{loadFromStorage();updateApiStatusUI(state.tmdbApiKey?'checking':'none',state.tmdbApiKey?'Bereit zur Prüfung':'Kein API-Key hinterlegt');updateHistoryUI();});
 
-document.addEventListener('DOMContentLoaded', () => {
-loadFromStorage();
-updateApiStatusUI('checking', 'Bereit zur Prüfung');
-updateHistoryUI();
-});
+function loadFromStorage(){try{const h=localStorage.getItem('cinecase_history');const parsedH=h?JSON.parse(h):[];state.watchedItems=Array.isArray(parsedH)?parsedH.filter(v=>v&&typeof v==='object'&&v.id!=null&&typeof v.title==='string'):[];const i=localStorage.getItem('cinecase_include');if(i!==null)state.includeWatched=JSON.parse(i)===true;const m=localStorage.getItem('cinecase_muted');if(m!==null)state.isMuted=JSON.parse(m)===true;const k=localStorage.getItem('cinecase_tmdb');if(k)state.tmdbApiKey=k.trim();}catch(e){state.watchedItems=[]}document.getElementById('includeWatchedToggle').checked=state.includeWatched;document.getElementById('muteIcon').textContent=state.isMuted?'🔇':'🔊';document.getElementById('tmdbApiKeyInput').value=state.tmdbApiKey}
+function saveToStorage(){try{localStorage.setItem('cinecase_history',JSON.stringify(state.watchedItems));localStorage.setItem('cinecase_include',JSON.stringify(state.includeWatched));localStorage.setItem('cinecase_muted',JSON.stringify(state.isMuted));localStorage.setItem('cinecase_tmdb',state.tmdbApiKey)}catch(e){showToast('Speichern nicht möglich')}}
+function isItemWatched(id){return state.watchedItems.some(item=>String(item.id)===String(id))}
+function updateApiStatusUI(status,text){state.apiStatus=status;state.apiMessage=text;const dot=document.getElementById('apiStatusDot'),label=document.getElementById('apiStatusText'),mDot=document.getElementById('modalStatusDot'),mTitle=document.getElementById('modalStatusTitle'),mDesc=document.getElementById('modalStatusDesc');if(status==='live'){dot.className='w-2.5 h-2.5 rounded-full bg-emerald-400';label.textContent='LIVE TMDB';if(mDot){mDot.className='w-4 h-4 rounded-full bg-emerald-400';mTitle.textContent='Live-API aktiv';mDesc.textContent=text}}else if(status==='offline'){dot.className='w-2.5 h-2.5 rounded-full bg-amber-500';label.textContent='Datenbank offline';if(mDot){mDot.className='w-4 h-4 rounded-full bg-amber-500';mTitle.textContent='Offline-Datenbank aktiv';mDesc.textContent=text}}else{dot.className='w-2.5 h-2.5 rounded-full bg-slate-400';label.textContent='Kein API-Key';if(mDot){mDot.className='w-4 h-4 rounded-full bg-slate-400';mTitle.textContent='Kein API-Key eingetragen';mDesc.textContent='Nutze Offline-Modus oder trage einen TMDB-Key ein.'}}}
 
-function loadFromStorage() {
-try {
-const h = localStorage.getItem('cinecase_history');
-if (h) state.watchedItems = JSON.parse(h);
-const i = localStorage.getItem('cinecase_include');
-if (i !== null) state.includeWatched = JSON.parse(i);
-const m = localStorage.getItem('cinecase_muted');
-if (m !== null) state.isMuted = JSON.parse(m);
-const k = localStorage.getItem('cinecase_tmdb');
-if (k) state.tmdbApiKey = k.trim();
-} catch (e) {}
-document.getElementById('includeWatchedToggle').checked = state.includeWatched;
-document.getElementById('muteIcon').textContent = state.isMuted ? '🔇' : '🔊';
-document.getElementById('tmdbApiKeyInput').value = state.tmdbApiKey;
-}
+let audioCtx=null;function initAudio(){if(!audioCtx){const AC=window.AudioContext||window.webkitAudioContext;if(AC)audioCtx=new AC()}if(audioCtx&&audioCtx.state==='suspended')audioCtx.resume()}function toggleMute(){state.isMuted=!state.isMuted;saveToStorage();document.getElementById('muteIcon').textContent=state.isMuted?'🔇':'🔊'}function playTick(){if(state.isMuted)return;try{initAudio();const osc=audioCtx.createOscillator(),g=audioCtx.createGain();osc.frequency.setValueAtTime(450,audioCtx.currentTime);g.gain.setValueAtTime(.1,audioCtx.currentTime);g.gain.exponentialRampToValueAtTime(.001,audioCtx.currentTime+.03);osc.connect(g);g.connect(audioCtx.destination);osc.start();osc.stop(audioCtx.currentTime+.04)}catch(e){}}
+function resetToStep1(){if(state.isSpinning)return;clearTimeout(state.spinTimeout);clearInterval(state.spinInterval);state.step=1;state.mediaType='movie';state.category=null;document.getElementById('step1Section').classList.remove('hidden');document.getElementById('step2Section').classList.add('hidden');document.getElementById('step3Section').classList.add('hidden');document.getElementById('breadcrumbBar').classList.add('hidden');if(!state.tmdbApiKey)updateApiStatusUI('none','Kein API-Key hinterlegt')}
+function selectMediaType(type){if(state.isSpinning)return;initAudio();state.mediaType=type;state.step=2;document.getElementById('step1Section').classList.add('hidden');document.getElementById('step3Section').classList.add('hidden');document.getElementById('step2Section').classList.remove('hidden');document.getElementById('breadcrumbBar').classList.remove('hidden');document.getElementById('crumbSep2').classList.add('hidden');document.getElementById('crumbCategory').classList.add('hidden');document.getElementById('crumbType').textContent=type==='movie'?'🍿 Filme':'📺 Serien';renderCategoryGrid()}
+function goToStep2(){if(!state.isSpinning)selectMediaType(state.mediaType)}
+function renderCategoryGrid(){const grid=document.getElementById('categoryGrid');grid.innerHTML='';CATEGORIES.forEach(cat=>{const btn=document.createElement('button');btn.onclick=()=>selectCategory(cat);btn.className='rounded-2xl bg-[#131822] border border-slate-800 hover:border-amber-400 p-5 text-left transition-all';const icon=document.createElement('div');icon.className='text-3xl mb-3';icon.textContent=cat.icon;const h=document.createElement('h3');h.className='font-display text-xl font-bold';h.textContent=cat.name;const p=document.createElement('p');p.className='text-xs text-slate-400 mt-1';p.textContent=cat.desc;btn.append(icon,h,p);grid.appendChild(btn)})}
+async function selectCategory(cat){if(state.isSpinning)return;state.category=cat;state.step=3;document.getElementById('step2Section').classList.add('hidden');document.getElementById('step3Section').classList.remove('hidden');document.getElementById('winnerCard').classList.add('hidden');document.getElementById('crumbSep2').classList.remove('hidden');document.getElementById('crumbCategory').classList.remove('hidden');document.getElementById('crumbCategory').textContent=cat.name;document.getElementById('caseBadgeIcon').textContent=cat.icon;document.getElementById('caseTitle').textContent=cat.name;await loadMediaPool(false)}
 
-function saveToStorage() {
-try {
-localStorage.setItem('cinecase_history', JSON.stringify(state.watchedItems));
-localStorage.setItem('cinecase_include', JSON.stringify(state.includeWatched));
-localStorage.setItem('cinecase_muted', JSON.stringify(state.isMuted));
-localStorage.setItem('cinecase_tmdb', state.tmdbApiKey);
-} catch (e) {}
-}
+function fallbackPool(){return FALLBACK_DATABASE.filter(item=>{if(item.type!==state.mediaType)return false;if(state.category.id==='top')return item.cat==='top'||item.rating>=8.5;if(state.category.id==='all')return item.cat==='all'||item.rating>=8.5;return item.cat===state.category.id})}
+function applyWatchedFilter(results){return state.includeWatched?results:results.filter(item=>!isItemWatched(item.id))}
+async function loadMediaPool(useCache=true){updateApiStatusUI(state.tmdbApiKey?'checking':'none','Prüfung der Datenquelle');let results=[],apiSuccess=false;if(state.tmdbApiKey&&state.tmdbApiKey.length>5){try{let fetched=[];const genre=state.category.genreId&&state.category.genreId!=='top'?(typeof state.category.genreId==='object'?state.category.genreId[state.mediaType]:state.category.genreId):null;for(let page=1;page<=3;page++){let url;if(state.category.id==='top'){url=`https://api.themoviedb.org/3/${state.mediaType}/top_rated?api_key=${encodeURIComponent(state.tmdbApiKey)}&language=de-DE&region=DE&page=${page}`}else if(genre){url=`https://api.themoviedb.org/3/discover/${state.mediaType}?api_key=${encodeURIComponent(state.tmdbApiKey)}&language=de-DE&region=DE&with_original_language=de|en|fr|es|it|sv|da|nl|no&with_genres=${encodeURIComponent(genre)}&sort_by=vote_count.desc&page=${page}`}else{url=`https://api.themoviedb.org/3/trending/${state.mediaType}/day?api_key=${encodeURIComponent(state.tmdbApiKey)}&language=de-DE&page=${page}`}const res=await fetch(url,{cache:useCache?'default':'no-store'});if(!res.ok)throw new Error(`HTTP ${res.status}`);const data=await res.json();if(Array.isArray(data.results))fetched=fetched.concat(data.results)}if(fetched.length>0){results=fetched.map(item=>({id:item.id,type:state.mediaType,title:item.title||item.name||'Unbekannter Titel',year:String(item.release_date||item.first_air_date||'2024').substring(0,4),rating:typeof item.vote_average==='number'?item.vote_average.toFixed(1):'7.5',poster_path:item.poster_path||null,emoji:'🎬',vibe:state.category.name,overview:item.overview||'Keine Beschreibung vorhanden.'}));apiSuccess=true}}catch(e){console.warn('TMDB API fetch failed:',e)}}if(!apiSuccess||results.length<5){updateApiStatusUI('offline','API nicht erreichbar oder kein Key – Offline-Datenbank aktiv.');results=fallbackPool();if(results.length<3)results=FALLBACK_DATABASE.filter(i=>i.type===state.mediaType)}else updateApiStatusUI('live','Live-Daten wurden erfolgreich von TMDB geladen.');results=applyWatchedFilter(results);state.activePool=results;if(state.activePool.length===0){state.activePool=fallbackPool();state.activePool=applyWatchedFilter(state.activePool)}document.getElementById('emptyPoolBanner').classList.toggle('hidden',state.activePool.length>0);document.querySelector('#poolCounter span').textContent=state.activePool.length;if(state.activePool.length===0){buildRouletteStrip([])}else buildRouletteStrip(state.activePool)}
 
-function isItemWatched(id) { return state.watchedItems.some(item => String(item.id) === String(id)); }
+function secureShuffle(array){const copy=[...array];for(let i=copy.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[copy[i],copy[j]]=[copy[j],copy[i]]}return copy}function shuffleCurrentPool(){if(state.isSpinning)return;if(state.activePool?.length){state.activePool=secureShuffle(state.activePool);buildRouletteStrip(state.activePool);showToast('🎲 Pool erfolgreich gemischt!')}}
+function buildRouletteStrip(pool){const track=document.getElementById('rouletteTrack');track.style.transition='none';track.style.transform='translateX(0px)';track.innerHTML='';state.rouletteItems=[];if(!pool||pool.length===0)return;for(let i=0;i<50;i++){const item=pool[Math.floor(Math.random()*pool.length)],card=document.createElement('div');card.dataset.index=String(i);card.style.width='176px';card.className='shrink-0 h-40 rounded-xl border border-slate-700 bg-[#1a2130] p-3 flex flex-col justify-between overflow-hidden relative';const top=document.createElement('div');top.className='flex justify-between text-xs text-amber-400 font-bold z-10';const rating=document.createElement('span');rating.textContent=`⭐ ${item.rating}`;const year=document.createElement('span');year.className='text-[10px] text-slate-400';year.textContent=item.year||'';top.append(rating,year);card.appendChild(top);if(item.poster_path){const img=document.createElement('img');img.src=`https://image.tmdb.org/t/p/w200${item.poster_path}`;img.alt='';img.className='absolute inset-0 w-full h-full object-cover opacity-60';img.onerror=()=>img.remove();card.appendChild(img)}else{const emoji=document.createElement('div');emoji.className='text-center text-3xl my-auto';emoji.textContent=item.emoji||'🎬';card.appendChild(emoji)}const title=document.createElement('div');title.className='font-bold text-xs text-white truncate z-10 bg-black/60 px-2 py-1 rounded text-center';title.textContent=item.title||'Unbekannter Titel';card.appendChild(title);track.appendChild(card);state.rouletteItems.push(item)}}
 
-function updateApiStatusUI(status, text) {
-state.apiStatus = status;
-state.apiMessage = text;
+async function startSpin(){if(state.isSpinning)return;if(!state.activePool||state.activePool.length===0){await loadMediaPool(false)}if(!state.activePool||state.activePool.length===0){showToast('Keine Titel verfügbar');return}state.isSpinning=true;document.getElementById('winnerCard').classList.add('hidden');document.getElementById('spinBtn').disabled=true;document.getElementById('spinBtnText').textContent='Spin läuft…';buildRouletteStrip(state.activePool);const track=document.getElementById('rouletteTrack');await new Promise(r=>requestAnimationFrame(r));const targetIndex=35;const targetCard=track.children[targetIndex];const viewport=document.getElementById('rouletteViewport');const winner=state.rouletteItems[targetIndex];state.currentWinner=winner;const viewportCenter=viewport.offsetWidth/2;const cardCenter=targetCard.offsetLeft+(targetCard.offsetWidth/2);const offset=cardCenter-viewportCenter;track.style.transition='transform 4.5s cubic-bezier(.08,.85,.14,1)';track.style.transform=`translateX(${-offset}px)`;let elapsed=0;clearInterval(state.spinInterval);state.spinInterval=setInterval(()=>{playTick();elapsed+=150;if(elapsed>=4400)clearInterval(state.spinInterval)},150);clearTimeout(state.spinTimeout);state.spinTimeout=setTimeout(()=>{state.isSpinning=false;document.getElementById('spinBtn').disabled=false;document.getElementById('spinBtnText').textContent='Case öffnen (Spin starten)';revealWinner(winner);try{confetti({particleCount:80,spread:70,origin:{y:.6}})}catch(e){}},4600)}
 
-const dot = document.getElementById('apiStatusDot');
-const label = document.getElementById('apiStatusText');
-const modalDot = document.getElementById('modalStatusDot');
-const modalTitle = document.getElementById('modalStatusTitle');
-const modalDesc = document.getElementById('modalStatusDesc');
+function revealWinner(item){document.getElementById('winnerTitle').textContent=item.title;document.getElementById('winnerVibe').textContent=`✨ ${item.vibe||''}`;document.getElementById('winnerDesc').textContent=item.overview||'';document.getElementById('winnerYear').textContent=item.year||'';document.getElementById('winnerRating').textContent=item.rating||'';document.getElementById('winnerMediaTypeBadge').textContent=item.type==='tv'?'Serie':'Film';const posterImg=document.getElementById('winnerPosterImg'),emoji=document.getElementById('winnerEmoji');if(item.poster_path){posterImg.src=`https://image.tmdb.org/t/p/w300${item.poster_path}`;posterImg.classList.remove('hidden');emoji.classList.add('hidden');posterImg.onerror=()=>{posterImg.classList.add('hidden');emoji.classList.remove('hidden')}}else{posterImg.classList.add('hidden');emoji.classList.remove('hidden');emoji.textContent=item.emoji||'🎬'}document.getElementById('winnerCard').classList.remove('hidden')}
+function toggleIncludeWatched(){state.includeWatched=document.getElementById('includeWatchedToggle').checked;saveToStorage();if(state.step===3&&state.category)loadMediaPool(true)}
+function markCurrentAsWatched(){if(!state.currentWinner)return;if(!isItemWatched(state.currentWinner.id)){state.watchedItems.unshift({...state.currentWinner,overview:String(state.currentWinner.overview||'').slice(0,500),title:String(state.currentWinner.title||'Unbekannter Titel').slice(0,200)});saveToStorage();updateHistoryUI();showToast('Als gesehen markiert!')}else showToast('Bereits als gesehen gespeichert')}
+function updateHistoryUI(){const badge=document.getElementById('historyBadge'),total=document.getElementById('historyTotalText'),list=document.getElementById('historyList');badge.textContent=state.watchedItems.length;total.textContent=`${state.watchedItems.length} Titel`;list.innerHTML='';if(state.watchedItems.length===0){const p=document.createElement('p');p.className='text-slate-400 text-xs text-center py-6';p.textContent='Noch nichts gesehen.';list.appendChild(p)}state.watchedItems.forEach(item=>{const row=document.createElement('div');row.className='flex justify-between items-center p-2.5 bg-[#1a2130] rounded-xl text-xs text-white';const title=document.createElement('span');title.textContent=`🎬 ${item.title||'Unbekannter Titel'}`;const btn=document.createElement('button');btn.textContent='Freigeben';btn.className='text-red-400 font-bold';btn.onclick=()=>removeFromHistory(item.id);row.append(title,btn);list.appendChild(row)})}
+function removeFromHistory(id){state.watchedItems=state.watchedItems.filter(i=>String(i.id)!==String(id));saveToStorage();updateHistoryUI();if(state.step===3&&state.category)loadMediaPool(true)}
+function clearAllHistory(){state.watchedItems=[];saveToStorage();updateHistoryUI();if(state.step===3&&state.category)loadMediaPool(true)}
+function openApiStatusModal(){document.getElementById('apiStatusModal').classList.remove('hidden');document.getElementById('apiStatusModal').classList.add('flex')}function closeApiStatusModal(){document.getElementById('apiStatusModal').classList.add('hidden');document.getElementById('apiStatusModal').classList.remove('flex')}function openHistoryModal(){updateHistoryUI();document.getElementById('historyModal').classList.remove('hidden')}function closeHistoryModal(){document.getElementById('historyModal').classList.add('hidden')}function openSettingsModal(){document.getElementById('settingsModal').classList.remove('hidden');document.getElementById('settingsModal').classList.add('flex')}function closeSettingsModal(){document.getElementById('settingsModal').classList.add('hidden');document.getElementById('settingsModal').classList.remove('flex')}
 
-if (status === 'live') {
-dot.className = 'w-2.5 h-2.5 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)]';
-label.textContent = 'LIVE TMDB';
-if (modalDot) {
-modalDot.className = 'w-4 h-4 rounded-full bg-emerald-400 shrink-0 shadow-[0_0_10px_rgba(52,211,153,0.8)]';
-modalTitle.textContent = 'Live-API aktiv';
-modalDesc.textContent = text;
-}
-} else if (status === 'offline') {
-dot.className = 'w-2.5 h-2.5 rounded-full bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.8)]';
-label.textContent = 'Datenbank offline';
-if (modalDot) {
-modalDot.className = 'w-4 h-4 rounded-full bg-amber-500 shrink-0 shadow-[0_0_10px_rgba(245,158,11,0.8)]';
-modalTitle.textContent = 'Offline-Datenbank aktiv';
-modalDesc.textContent = text;
-}
-} else {
-dot.className = 'w-2.5 h-2.5 rounded-full bg-slate-400';
-label.textContent = 'Kein API-Key';
-if (modalDot) {
-modalDot.className = 'w-4 h-4 rounded-full bg-slate-400 shrink-0';
-modalTitle.textContent = 'Kein API-Key eingetragen';
-modalDesc.textContent = 'Bitte trage in den Einstellungen deinen TMDB-Key ein oder nutze den Offline-Modus.';
-}
-}
-}
-
-let audioCtx = null;
-function initAudio() {
-if (!audioCtx) {
-const AC = window.AudioContext || window.webkitAudioContext;
-if (AC) audioCtx = new AC();
-}
-if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
-}
-
-function toggleMute() {
-state.isMuted = !state.isMuted;
-saveToStorage();
-document.getElementById('muteIcon').textContent = state.isMuted ? '🔇' : '🔊';
-}
-
-function playTick() {
-if (state.isMuted) return;
-try {
-initAudio();
-const osc = audioCtx.createOscillator();
-const g = audioCtx.createGain();
-osc.frequency.setValueAtTime(450, audioCtx.currentTime);
-g.gain.setValueAtTime(0.1, audioCtx.currentTime);
-g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.03);
-osc.connect(g); g.connect(audioCtx.destination);
-osc.start(); osc.stop(audioCtx.currentTime + 0.04);
-} catch (e) {}
-}
-
-function resetToStep1() {
-if (state.isSpinning) return;
-state.step = 1; state.mediaType = 'movie'; state.category = null;
-document.getElementById('step1Section').classList.remove('hidden');
-document.getElementById('step2Section').classList.add('hidden');
-document.getElementById('step3Section').classList.add('hidden');
-document.getElementById('breadcrumbBar').classList.add('hidden');
-if (!state.tmdbApiKey || state.tmdbApiKey.length < 10) {
-updateApiStatusUI('none', 'Kein API-Key hinterlegt');
-}
-}
-
-function selectMediaType(type) {
-if (state.isSpinning) return;
-initAudio();
-state.mediaType = type; state.step = 2;
-document.getElementById('step1Section').classList.add('hidden');
-document.getElementById('step3Section').classList.add('hidden');
-document.getElementById('step2Section').classList.remove('hidden');
-document.getElementById('breadcrumbBar').classList.remove('hidden');
-document.getElementById('crumbSep2').classList.add('hidden');
-document.getElementById('crumbCategory').classList.add('hidden');
-document.getElementById('crumbType').textContent = type === 'movie' ? '🍿 Filme' : '📺 Serien';
-renderCategoryGrid();
-}
-
-function goToStep2() {
-if (state.isSpinning) return;
-selectMediaType(state.mediaType);
-}
-
-function renderCategoryGrid() {
-const grid = document.getElementById('categoryGrid');
-grid.innerHTML = '';
-CATEGORIES.forEach(cat => {
-const btn = document.createElement('button');
-btn.onclick = () => selectCategory(cat);
-btn.className = 'rounded-2xl bg-[#131822] border border-slate-800 hover:border-amber-400 p-5 text-left transition-all';
-btn.innerHTML = `<div class="text-3xl mb-3">${cat.icon}</div> <h3 class="font-display text-xl font-bold text-white">${cat.name}</h3> <p class="text-xs text-slate-400 mt-1">${cat.desc}</p>`;
-grid.appendChild(btn);
-});
-}
-
-async function selectCategory(cat) {
-if (state.isSpinning) return;
-state.category = cat; state.step = 3;
-document.getElementById('step2Section').classList.add('hidden');
-document.getElementById('step3Section').classList.remove('hidden');
-document.getElementById('winnerCard').classList.add('hidden');
-document.getElementById('crumbSep2').classList.remove('hidden');
-document.getElementById('crumbCategory').classList.remove('hidden');
-document.getElementById('crumbCategory').textContent = cat.name;
-document.getElementById('caseBadgeIcon').textContent = cat.icon;
-document.getElementById('caseTitle').textContent = cat.name;
-
-await loadMediaPool();
-}
-
-async function loadMediaPool() {
-let results = [];
-let apiSuccess = false;
-
-if (state.tmdbApiKey && state.tmdbApiKey.length > 5) {
-try {
-let fetchedItems = [];
-const genreIdToUse = state.category.genreId && state.category.genreId !== 'top' ? (typeof state.category.genreId === 'object' ? state.category.genreId[state.mediaType] : state.category.genreId) : null;
-
-for (let page = 1; page <= 3; page++) {
-let url = '';
-if (state.category.id === 'top') {
-url = `https://api.themoviedb.org/3/movie/top_rated?api_key=${state.tmdbApiKey}&language=de-DE&region=DE&page=${page}`;
-if (state.mediaType === 'tv') {
-url = `https://api.themoviedb.org/3/tv/top_rated?api_key=${state.tmdbApiKey}&language=de-DE&page=${page}`;
-}
-} else if (genreIdToUse) {
-url = `https://api.themoviedb.org/3/discover/${state.mediaType}?api_key=${state.tmdbApiKey}&language=de-DE&region=DE&with_original_language=de|en|fr|es|it|sv|da|nl|no&with_genres=${genreIdToUse}&sort_by=vote_count.desc&page=${page}`;
-} else {
-url = `https://api.themoviedb.org/3/trending/${state.mediaType}/day?api_key=${state.tmdbApiKey}&language=de-DE&page=${page}`;
-}
-
-const res = await fetch(url);
-if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
-const data = await res.json();
-if (data && data.results) {
-fetchedItems = fetchedItems.concat(data.results);
-}
-}
-
-if (fetchedItems.length > 0) {
-results = fetchedItems.map(item => ({
-id: item.id,
-type: state.mediaType,
-title: item.title || item.name,
-year: (item.release_date || item.first_air_date || '2024').substring(0, 4),
-rating: item.vote_average ? item.vote_average.toFixed(1) : '7.5',
-poster_path: item.poster_path,
-emoji: '🎬',
-vibe: state.category.name,
-overview: item.overview || 'Keine Beschreibung vorhanden.'
-}));
-apiSuccess = true;
-}
-} catch (e) {
-console.warn("TMDB API fetch failed:", e);
-apiSuccess = false;
-}
-}
-
-if (!apiSuccess || results.length < 5) {
-updateApiStatusUI('offline', 'API nicht erreichbar oder kein Key – Offline-Datenbank aktiv.');
-results = FALLBACK_DATABASE.filter(item => {
-if (item.type !== state.mediaType) return false;
-if (state.category.id === 'top') return item.cat === 'top' || item.rating >= 8.5;
-if (state.category.id !== 'all' && item.cat !== state.category.id && item.cat !== 'all') return false;
-return true;
-});
-if (results.length < 3) {
-results = FALLBACK_DATABASE.filter(i => i.type === state.mediaType);
-}
-} else {
-updateApiStatusUI('live', 'Live-Daten werden erfolgreich von TMDB geladen.');
-}
-
-if (!state.includeWatched) {
-results = results.filter(item => !isItemWatched(item.id));
-}
-
-state.activePool = results.length > 0 ? results : FALLBACK_DATABASE.filter(i => i.type === state.mediaType);
-document.getElementById('emptyPoolBanner').classList.toggle('hidden', results.length > 0);
-document.querySelector('#poolCounter span').textContent = state.activePool.length;
-
-buildRouletteStrip(state.activePool);
-}
-
-function shuffleCurrentPool() {
-if (state.isSpinning) return;
-if (state.activePool && state.activePool.length > 0) {
-// Zufällig mischen
-state.activePool.sort(() => Math.random() - 0.5);
-buildRouletteStrip(state.activePool);
-showToast('🎲 Pool erfolgreich durchgemischt!');
-}
-}
-
-function buildRouletteStrip(pool) {
-const track = document.getElementById('rouletteTrack');
-track.style.transition = 'none';
-track.style.transform = 'translateX(0px)';
-track.innerHTML = '';
-state.rouletteItems = [];
-
-for (let i = 0; i < 50; i++) {
-const item = pool[Math.floor(Math.random() * pool.length)];
-state.rouletteItems.push(item);
-
-const card = document.createElement('div');
-card.style.width = '176px';
-card.className = 'shrink-0 h-40 rounded-xl border border-slate-700 bg-[#1a2130] p-3 flex flex-col justify-between overflow-hidden relative';
-
-const posterUrl = item.poster_path ? `https://image.tmdb.org/t/p/w200${item.poster_path}` : null;
-
-card.innerHTML = `
-<div class="flex justify-between items-center text-xs text-amber-400 font-bold z-10">
-<span>⭐ ${item.rating}</span>
-<span class="text-[10px] text-slate-400 uppercase">${item.year}</span>
-</div>
-${posterUrl ? `<img src="${posterUrl}" class="absolute inset-0 w-full h-full object-cover opacity-60">` : `<div class="text-center text-3xl my-auto">${item.emoji}</div>`}
-<div class="font-bold text-xs text-white truncate z-10 bg-black/60 px-2 py-1 rounded text-center">${item.title}</div>
-`;
-track.appendChild(card);
-}
-}
-
-async function startSpin() {
-if (state.isSpinning) return;
-state.isSpinning = true;
-document.getElementById('winnerCard').classList.add('hidden');
-
-await loadMediaPool();
-const track = document.getElementById('rouletteTrack');
-void track.offsetWidth; 
-
-const winner = state.rouletteItems[35]; 
-state.currentWinner = winner;
-
-const viewportWidth = document.getElementById('rouletteViewport').offsetWidth;
-const offset = 16 + 35 * 188 + 88 - viewportWidth / 2;
-track.style.transition = 'transform 4.5s cubic-bezier(0.08, 0.85, 0.14, 1)';
-track.style.transform = `translateX(-${offset}px)`;
-
-let t = 0;
-const interval = setInterval(() => { playTick(); t += 150; if (t > 4400) clearInterval(interval); }, 150);
-setTimeout(() => {
-state.isSpinning = false;
-revealWinner(winner);
-try { confetti({ particleCount: 80, spread: 70, origin: { y: 0.6 } }); } catch(e){}
-}, 4600);
-}
-
-function revealWinner(item) {
-document.getElementById('winnerTitle').textContent = item.title;
-document.getElementById('winnerVibe').textContent = `✨ ${item.vibe}`;
-document.getElementById('winnerDesc').textContent = item.overview;
-document.getElementById('winnerYear').textContent = item.year;
-document.getElementById('winnerRating').textContent = item.rating;
-
-const posterImg = document.getElementById('winnerPosterImg');
-const emojiSpan = document.getElementById('winnerEmoji');
-if (item.poster_path) {
-posterImg.src = `https://image.tmdb.org/t/p/w300${item.poster_path}`;
-posterImg.classList.remove('hidden');
-emojiSpan.classList.add('hidden');
-} else {
-posterImg.classList.add('hidden');
-emojiSpan.classList.remove('hidden');
-emojiSpan.textContent = item.emoji;
-}
-
-document.getElementById('winnerCard').classList.remove('hidden');
-}
-
-function toggleIncludeWatched() {
-state.includeWatched = document.getElementById('includeWatchedToggle').checked;
-saveToStorage();
-}
-
-function markCurrentAsWatched() {
-if (!state.currentWinner) return;
-if (!isItemWatched(state.currentWinner.id)) {
-state.watchedItems.unshift(state.currentWinner);
-saveToStorage();
-updateHistoryUI();
-showToast('Als geschaut markiert!');
-}
-}
-
-function updateHistoryUI() {
-document.getElementById('historyBadge').textContent = state.watchedItems.length;
-document.getElementById('historyTotalText').textContent = `${state.watchedItems.length} Titel`;
-const list = document.getElementById('historyList');
-list.innerHTML = state.watchedItems.length === 0 ? '<p class="text-slate-400 text-xs text-center py-6">Noch nichts geschaut.</p>' : '';
-state.watchedItems.forEach(item => {
-const row = document.createElement('div');
-row.className = 'flex justify-between items-center p-2.5 bg-[#1a2130] rounded-xl text-xs text-white';
-row.innerHTML = `<span>🎬 ${item.title}</span><button onclick="removeFromHistory('${item.id}')" class="text-red-400 font-bold hover:underline">Freigeben</button>`;
-list.appendChild(row);
-});
-}
-
-function removeFromHistory(id) {
-state.watchedItems = state.watchedItems.filter(i => String(i.id) !== String(id));
-saveToStorage();
-updateHistoryUI();
-}
-
-function clearAllHistory() {
-state.watchedItems = [];
-saveToStorage();
-updateHistoryUI();
-}
-
-function openApiStatusModal() { document.getElementById('apiStatusModal').classList.remove('hidden'); }
-function closeApiStatusModal() { document.getElementById('apiStatusModal').classList.add('hidden'); }
-function openHistoryModal() { updateHistoryUI(); document.getElementById('historyModal').classList.remove('hidden'); }
-function closeHistoryModal() { document.getElementById('historyModal').classList.add('hidden'); }
-function openSettingsModal() { document.getElementById('settingsModal').classList.remove('hidden'); }
-function closeSettingsModal() { document.getElementById('settingsModal').classList.add('hidden'); }
-
-function saveAndTestTmdbKey() {
-state.tmdbApiKey = document.getElementById('tmdbApiKeyInput').value.trim();
-saveToStorage();
-if (!state.tmdbApiKey) {
-updateApiStatusUI('none', 'Kein API-Key hinterlegt');
-}
-showToast('API-Key gespeichert!');
-closeSettingsModal();
-if (state.step === 3 && state.category) {
-loadMediaPool();
-}
-}
-
-function copySyncCode() {
-const code = btoa(JSON.stringify({ k: state.tmdbApiKey, w: state.watchedItems }));
-document.getElementById('syncCodeField').value = code;
-if (navigator.clipboard) navigator.clipboard.writeText(code);
-showToast('Sync-Code kopiert!');
-}
-
-function importSyncCode() {
-try {
-const data = JSON.parse(atob(document.getElementById('syncCodeField').value));
-if (data.k) state.tmdbApiKey = data.k;
-if (data.w) state.watchedItems = data.w;
-saveToStorage();
-updateHistoryUI();
-showToast('Erfolgreich geladen!');
-} catch(e) { showToast('Ungültiger Code'); }
-}
-
-function enableWatchedAndSpin() {
-state.includeWatched = true;
-document.getElementById('includeWatchedToggle').checked = true;
-saveToStorage();
-startSpin();
-}
-
-function showToast(msg) {
-const c = document.getElementById('toastContainer');
-const toast = document.createElement('div');
-toast.className = 'px-3 py-2 bg-[#1a2130] text-white text-xs rounded-xl shadow-xl border border-slate-700';
-toast.textContent = msg;
-c.appendChild(toast);
-setTimeout(() => toast.remove(), 2500);
-}
+async function saveAndTestTmdbKey(){const input=document.getElementById('tmdbApiKeyInput');state.tmdbApiKey=input.value.trim();if(!state.tmdbApiKey){saveToStorage();updateApiStatusUI('none','Kein API-Key hinterlegt');showToast('Key gelöscht');closeSettingsModal();return}const btn=document.getElementById('saveTmdbBtn');btn.disabled=true;btn.textContent='Teste…';try{const res=await fetch(`https://api.themoviedb.org/3/movie/top_rated?api_key=${encodeURIComponent(state.tmdbApiKey)}&language=de-DE&page=1`);if(!res.ok)throw new Error(`HTTP ${res.status}`);await res.json();saveToStorage();updateApiStatusUI('live','API-Key erfolgreich getestet.');showToast('API-Key gespeichert & getestet!')}catch(e){saveToStorage();updateApiStatusUI('offline','API-Key ungültig oder TMDB nicht erreichbar.');showToast('Key konnte nicht bestätigt werden')}finally{btn.disabled=false;btn.textContent='Testen & speichern';closeSettingsModal();if(state.step===3&&state.category)loadMediaPool(false)}}
+function utf8ToBase64(value){const bytes=new TextEncoder().encode(value);let binary='';bytes.forEach(b=>binary+=String.fromCharCode(b));return btoa(binary)}function base64ToUtf8(value){const binary=atob(value);const bytes=Uint8Array.from(binary,c=>c.charCodeAt(0));return new TextDecoder().decode(bytes)}
+function copySyncCode(){const code=utf8ToBase64(JSON.stringify({v:1,w:state.watchedItems.map(item=>({id:String(item.id),type:item.type==='tv'?'tv':'movie',title:String(item.title||'').slice(0,200),year:String(item.year||''),rating:String(item.rating||''),poster_path:null,emoji:item.emoji||'🎬',vibe:item.vibe||'',overview:String(item.overview||'').slice(0,500)}))}));document.getElementById('syncCodeField').value=code;if(navigator.clipboard?.writeText)navigator.clipboard.writeText(code);showToast('Sync-Code kopiert!')}
+function importSyncCode(){try{const raw=document.getElementById('syncCodeField').value.trim();if(!raw)throw new Error('leer');const data=JSON.parse(base64ToUtf8(raw));if(!Array.isArray(data.w)||data.w.length>1000)throw new Error('Format ungültig');const normalized=data.w.filter(item=>item&&item.id!=null&&typeof item.title==='string').slice(0,1000).map(item=>({id:String(item.id).slice(0,100),type:item.type==='tv'?'tv':'movie',title:item.title.slice(0,200),year:String(item.year||'').replace(/[^0-9]/g,'').slice(0,4),rating:typeof item.rating==='number'?item.rating:String(item.rating||'').replace(/[^0-9.]/g,'').slice(0,4),poster_path:null,emoji:'🎬',vibe:String(item.vibe||'').slice(0,100),overview:String(item.overview||'').slice(0,500)}));state.watchedItems=normalized;saveToStorage();updateHistoryUI();showToast('Erfolgreich geladen!');if(state.step===3&&state.category)loadMediaPool(true)}catch(e){showToast('Ungültiger oder beschädigter Sync-Code')}}
+function enableWatchedAndSpin(){state.includeWatched=true;document.getElementById('includeWatchedToggle').checked=true;saveToStorage();loadMediaPool(true).then(()=>startSpin())}
+function showToast(msg){const c=document.getElementById('toastContainer'),toast=document.createElement('div');toast.className='px-3 py-2 bg-[#1a2130] text-white text-xs rounded-xl shadow-xl border border-slate-700';toast.textContent=msg;c.appendChild(toast);setTimeout(()=>toast.remove(),2500)}
 </script>
 </body>
 </html>
