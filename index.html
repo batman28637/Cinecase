@@ -284,7 +284,7 @@ CineCase <span class="text-amber-400">CS:2</span>
 <div class="pt-4 border-t border-slate-800 space-y-3">
 <label class="text-sm font-bold text-white">Sync-Code</label>
 <div class="flex gap-2">
-<input type="text" id="syncCodeField" class="flex-grow bg-[#0b0e14] border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-300 font-mono">
+<input type="text" id="syncCodeField" class="flex-grow bg-[#0b0e14] border border-slate-700 rounded-xl px-3.5 py-2 text-xs text-slate-300 font-mono">
 <button onclick="copySyncCode()" class="px-3 py-2 rounded-xl bg-slate-800 text-white text-xs">Kopieren</button>
 <button onclick="importSyncCode()" class="px-3 py-2 rounded-xl bg-blue-600 text-white text-xs">Laden</button>
 </div>
@@ -295,17 +295,16 @@ CineCase <span class="text-amber-400">CS:2</span>
 <script>
 const CATEGORIES = [
 { id: 'all', name: 'Beliebt / Mix', icon: '🎲', desc: 'Die besten Highlights quer durch alle Genres.', genreId: null },
-{ id: 'action', name: 'Action & Abenteuer', icon: '💥', desc: 'Adrenalin und Verfolgungsjagden.', genreId: '28,12' },
+{ id: 'action', name: 'Action & Abenteuer', icon: '💥', desc: 'Adrenalin und Verfolgungsjagden.', genreId: '28' },
 { id: 'comedy', name: 'Komödie', icon: '😂', desc: 'Zum Abschalten und Lachen.', genreId: '35' },
-{ id: 'scifi', name: 'Sci-Fi & Fantasy', icon: '🚀', desc: 'Fremde Welten und Zukunftsvisionen.', genreId: '878,14' },
-{ id: 'thriller', name: 'Thriller & Krimi', icon: '🕵️', desc: 'Spannung und krasse Plot-Twists.', genreId: '53,80,9648' },
+{ id: 'scifi', name: 'Sci-Fi & Fantasy', icon: '🚀', desc: 'Fremde Welten und Zukunftsvisionen.', genreId: '878' },
+{ id: 'thriller', name: 'Thriller & Krimi', icon: '🕵️', desc: 'Spannung und krasse Plot-Twists.', genreId: '53' },
 { id: 'horror', name: 'Horror', icon: '👻', desc: 'Gänsehaut für den Filmabend.', genreId: '27' },
 { id: 'drama', name: 'Drama', icon: '🎭', desc: 'Tiefgründige Geschichten.', genreId: '18' },
 { id: 'romance', name: 'Romantik', icon: '❤️', desc: 'Herzklopfen und Liebesgeschichten.', genreId: '10749' },
 { id: 'animation', name: 'Animation / Anime', icon: '🎨', desc: 'Visuelle Kunstwerke.', genreId: '16' }
 ];
 
-// Robuster Offline-Pool mit zahlreichen unterschiedlichen Titeln für alle Kategorien als Garant
 const FALLBACK_DATABASE = [
 { id: 101, type: 'movie', cat: 'action', title: 'Mad Max: Fury Road', year: '2015', rating: 8.1, poster_path: null, emoji: '🔥', vibe: 'Adrenalin', overview: 'Postapokalyptische Verfolgungsjagd.' },
 { id: 102, type: 'movie', cat: 'action', title: 'John Wick', year: '2014', rating: 7.4, poster_path: null, emoji: '🔫', vibe: 'Stylish', overview: 'Ex-Auftragskiller auf Rachefeldzug.' },
@@ -321,8 +320,6 @@ const FALLBACK_DATABASE = [
 { id: 112, type: 'movie', cat: 'animation', title: 'Spirited Away', year: '2001', rating: 8.6, poster_path: null, emoji: '🐉', vibe: 'Magisch', overview: 'Reise in eine geheimnisvolle Geisterwelt.' },
 { id: 201, type: 'tv', cat: 'all', title: 'Breaking Bad', year: '2008', rating: 9.5, poster_path: null, emoji: '🧪', vibe: 'Meisterwerk', overview: 'Chemie-Lehrer wird zum Drogenboss.' },
 { id: 202, type: 'tv', cat: 'all', title: 'Stranger Things', year: '2016', rating: 8.7, poster_path: null, emoji: '🚲', vibe: '80er Nostalgie', overview: 'Geheimnisvolle Vorkommnisse in Hawkins.' },
-{ id: 203, type: 'tv', cat: 'all', title: 'Chernobyl', year: '2019', rating: 9.4, poster_path: null, emoji: '☢️', vibe: 'Intensiv', overview: 'Aufarbeitung der Atomkatastrophe.' },
-{ id: 204, type: 'tv', cat: 'all', title: 'Game of Thrones', year: '2011', rating: 9.2, poster_path: null, emoji: '👑', vibe: 'Episch', overview: 'Kampf um den Eisernen Thron.' },
 { id: '205', type: 'tv', cat: 'comedy', title: 'The Office', year: '2005', rating: 9.0, poster_path: null, emoji: '📎', vibe: 'Zum Totlachen', overview: 'Der wahnsinnige Büroalltag.' }
 ];
 
@@ -453,19 +450,24 @@ await loadMediaPool();
 
 async function loadMediaPool() {
 let results = [];
-// 1. TMDB-Abruf wenn Key vorhanden
 if (state.tmdbApiKey && state.tmdbApiKey.length > 5) {
 try {
-let url = '';
-if (state.category.genreId) {
-url = `https://api.themoviedb.org/3/discover/${state.mediaType}?api_key=${state.tmdbApiKey}&language=de-DE&with_genres=${state.category.genreId}&sort_by=popularity.desc&page=1`;
-} else {
-url = `https://api.themoviedb.org/3/trending/${state.mediaType}/day?api_key=${state.tmdbApiKey}&language=de-DE`;
-}
+// Mehrere Seiten abrufen für riesige Vielfalt (bis zu 400 Titel pro Kategorie)
+let fetchedItems = [];
+for (let page = 1; page <= 3; page++) {
+let url = state.category.genreId
+? `https://api.themoviedb.org/3/discover/${state.mediaType}?api_key=${state.tmdbApiKey}&language=de-DE&with_genres=${state.category.genreId}&sort_by=popularity.desc&page=${page}`
+: `https://api.themoviedb.org/3/trending/${state.mediaType}/day?api_key=${state.tmdbApiKey}&language=de-DE&page=${page}`;
+
 const res = await fetch(url);
 const data = await res.json();
-if (data && data.results && data.results.length > 0) {
-results = data.results.map(item => ({
+if (data && data.results) {
+fetchedItems = fetchedItems.concat(data.results);
+}
+}
+
+if (fetchedItems.length > 0) {
+results = fetchedItems.map(item => ({
 id: item.id,
 type: state.mediaType,
 title: item.title || item.name,
@@ -482,7 +484,7 @@ console.error("TMDB error:", e);
 }
 }
 
-// 2. Fallback oder Ergänzung aus lokaler Datenbank
+// Fallback, falls API blockiert oder leer
 if (results.length < 5) {
 const fallbacks = FALLBACK_DATABASE.filter(item => {
 if (item.type !== state.mediaType) return false;
@@ -492,7 +494,6 @@ return true;
 results = [...results, ...fallbacks];
 }
 
-// 3. History-Filter anwenden
 if (!state.includeWatched) {
 results = results.filter(item => !isItemWatched(item.id));
 }
