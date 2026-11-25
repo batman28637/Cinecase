@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="referrer" content="no-referrer">
 <title>CineCase CS:2 – Film- & Serien-Roulette</title>
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -20,6 +21,7 @@ tailwind.config={darkMode:'class',theme:{extend:{fontFamily:{sans:['Inter','sans
 body{background:#0b0e14;color:#f1f5f9;background-image:radial-gradient(circle at 15% 15%,rgba(75,105,255,.08),transparent 45%),radial-gradient(circle at 85% 85%,rgba(235,75,75,.08),transparent 45%);min-height:100vh;min-height:100dvh;overflow-x:hidden;-webkit-tap-highlight-color:transparent;-webkit-touch-callout:none;user-select:none;padding-bottom:env(safe-area-inset-bottom)}
 input,textarea{user-select:text;-webkit-user-select:text}.safe-header{padding-top:max(.75rem,env(safe-area-inset-top))}.roulette-mask{mask-image:linear-gradient(to right,transparent 0%,black 12%,black 88%,transparent 100%);-webkit-mask-image:linear-gradient(to right,transparent 0%,black 12%,black 88%,transparent 100%)}
 ::-webkit-scrollbar{width:6px;height:6px}::-webkit-scrollbar-track{background:#0b0e14}::-webkit-scrollbar-thumb{background:#2a3447;border-radius:9999px}@keyframes needlePulse{0%,100%{filter:drop-shadow(0 0 6px rgba(255,215,0,.8))}50%{filter:drop-shadow(0 0 14px rgba(255,215,0,1))}}.needle-glow{animation:needlePulse 2s infinite}
+button:disabled{opacity:.6;cursor:not-allowed}
 </style>
 </head>
 <body class="antialiased selection:bg-amber-500/30 selection:text-amber-200 flex flex-col">
@@ -31,9 +33,9 @@ input,textarea{user-select:text;-webkit-user-select:text}.safe-header{padding-to
 </div>
 <div class="flex items-center gap-2 sm:gap-3">
 <label class="flex items-center gap-2 bg-[#131822] border border-slate-800 px-3 py-2 rounded-xl cursor-pointer min-h-[42px]"><input type="checkbox" id="includeWatchedToggle" class="w-4 h-4 accent-amber-500" onchange="toggleIncludeWatched()"><span class="text-xs sm:text-sm font-medium text-slate-300"><span class="hidden lg:inline">Bereits gesehene einbeziehen</span><span class="lg:hidden">Gesehene inkl.</span></span></label>
-<button id="muteBtn" onclick="toggleMute()" class="px-3 py-2 rounded-xl bg-[#131822] border border-slate-800 text-slate-300 min-h-[42px]"><span id="muteIcon">🔊</span></button>
-<button onclick="openHistoryModal()" class="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-[#131822] border border-slate-800 text-slate-200 min-h-[42px]"><span>🕒</span><span id="historyBadge" class="px-1.5 py-0.5 text-xs font-bold rounded-md bg-amber-500/20 text-amber-400">0</span></button>
-<button id="settingsBtn" onclick="openSettingsModal()" class="relative px-3.5 py-2 rounded-xl bg-[#131822] border border-amber-500/40 text-amber-300 min-h-[42px]"><span>⚙️</span></button>
+<button id="muteBtn" onclick="toggleMute()" aria-label="Ton an/aus" class="px-3 py-2 rounded-xl bg-[#131822] border border-slate-800 text-slate-300 min-h-[42px]"><span id="muteIcon">🔊</span></button>
+<button onclick="openHistoryModal()" aria-label="Verlauf" class="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-[#131822] border border-slate-800 text-slate-200 min-h-[42px]"><span>🕒</span><span id="historyBadge" class="px-1.5 py-0.5 text-xs font-bold rounded-md bg-amber-500/20 text-amber-400">0</span></button>
+<button id="settingsBtn" onclick="openSettingsModal()" aria-label="Einstellungen" class="relative px-3.5 py-2 rounded-xl bg-[#131822] border border-amber-500/40 text-amber-300 min-h-[42px]"><span>⚙️</span></button>
 </div></div>
 </header>
 <div id="breadcrumbBar" class="hidden bg-[#131822]/60 border-b border-slate-800/60"><div class="max-w-6xl mx-auto px-4 py-2.5 flex items-center justify-between text-xs sm:text-sm"><div class="flex items-center gap-2 text-slate-400"><button onclick="resetToStep1()" class="hover:text-amber-400">🏠 Start</button><span>/</span><button id="crumbType" onclick="goToStep2()" class="font-semibold text-slate-200">Film</button><span id="crumbSep2" class="hidden">/</span><span id="crumbCategory" class="hidden font-semibold text-amber-400">Action</span></div><div class="flex items-center gap-3"><button onclick="shuffleCurrentPool()" class="text-xs text-amber-400 bg-amber-500/10 border border-amber-500/30 px-2.5 py-1 rounded-lg">🎲 Pool shufflen</button><div id="poolCounter" class="text-xs text-slate-400 bg-slate-800/70 px-2.5 py-1 rounded-lg">Verfügbar: <span class="text-white font-bold">0</span></div></div></div></div>
@@ -48,9 +50,11 @@ input,textarea{user-select:text;-webkit-user-select:text}.safe-header{padding-to
 </main>
 <div id="apiStatusModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4"><div onclick="closeApiStatusModal()" class="absolute inset-0 bg-black/85"></div><div class="relative w-full max-w-md rounded-3xl bg-[#131822] border border-slate-700 p-6 z-10"><div class="flex items-center justify-between border-b border-slate-800 pb-3"><h3 class="font-display text-xl font-extrabold">🔌 TMDB API Status</h3><button onclick="closeApiStatusModal()" class="w-8 h-8 rounded-xl bg-slate-800">✕</button></div><div class="my-5 p-4 rounded-2xl bg-[#1a2130] flex items-center gap-3"><div id="modalStatusDot" class="w-4 h-4 rounded-full bg-slate-400"></div><div><div id="modalStatusTitle" class="font-bold text-sm">Prüfe Status...</div><div id="modalStatusDesc" class="text-xs text-slate-400">Bitte warten</div></div></div><button onclick="closeApiStatusModal()" class="w-full py-3 rounded-xl bg-amber-500 text-slate-950 font-bold">Verstanden</button></div></div>
 <div id="historyModal" class="fixed inset-0 z-50 hidden"><div onclick="closeHistoryModal()" class="absolute inset-0 bg-black/75"></div><div class="absolute right-0 top-0 bottom-0 w-full max-w-md bg-[#131822] border-l border-slate-800 flex flex-col z-10"><div class="p-5 border-b border-slate-800 flex justify-between"><h3 class="font-display text-2xl font-extrabold">📜 Bereits gesehen</h3><button onclick="closeHistoryModal()" class="w-9 h-9 rounded-xl bg-slate-800">✕</button></div><div id="historyList" class="flex-grow overflow-y-auto p-4 space-y-2.5"></div><div class="p-4 border-t border-slate-800 flex justify-between"><span id="historyTotalText" class="text-xs text-slate-400">0 Titel</span><button onclick="clearAllHistory()" class="text-xs text-red-400">Alle löschen</button></div></div></div>
-<div id="settingsModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4"><div onclick="closeSettingsModal()" class="absolute inset-0 bg-black/80"></div><div class="relative w-full max-w-xl max-h-[90vh] overflow-y-auto rounded-3xl bg-[#131822] border border-slate-700 p-6 z-10"><div class="flex justify-between border-b border-slate-800 pb-4"><h3 class="font-display text-2xl font-extrabold">⚙️ Einstellungen</h3><button onclick="closeSettingsModal()" class="w-9 h-9 rounded-xl bg-slate-800">✕</button></div><div class="mt-5"><label class="text-sm font-bold">TMDB API-Key</label><div class="flex gap-2 mt-2"><input type="password" id="tmdbApiKeyInput" autocomplete="off" placeholder="API-Key…" class="flex-grow min-w-0 bg-[#0b0e14] border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm font-mono"><button onclick="saveAndTestTmdbKey()" id="saveTmdbBtn" class="px-4 rounded-xl bg-amber-500 text-slate-950 font-bold text-sm">Testen & speichern</button></div><small class="text-slate-400 text-xs block mt-2">Der Key bleibt nur in deinem Browser gespeichert.</small></div><div class="mt-5 pt-4 border-t border-slate-800"><label class="text-sm font-bold">Sync-Code</label><p class="text-xs text-slate-400 mt-1 mb-2">Synchronisiert nur den Verlauf — niemals den API-Key.</p><div class="flex gap-2"><input type="text" id="syncCodeField" class="flex-grow min-w-0 bg-[#0b0e14] border border-slate-700 rounded-xl px-3 py-2 text-xs font-mono"><button onclick="copySyncCode()" class="px-3 rounded-xl bg-slate-800 text-xs">Kopieren</button><button onclick="importSyncCode()" class="px-3 rounded-xl bg-blue-600 text-xs">Laden</button></div></div></div></div>
+<div id="settingsModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4"><div onclick="closeSettingsModal()" class="absolute inset-0 bg-black/80"></div><div class="relative w-full max-w-xl max-h-[90vh] overflow-y-auto rounded-3xl bg-[#131822] border border-slate-700 p-6 z-10"><div class="flex justify-between border-b border-slate-800 pb-4"><h3 class="font-display text-2xl font-extrabold">⚙️ Einstellungen</h3><button onclick="closeSettingsModal()" class="w-9 h-9 rounded-xl bg-slate-800">✕</button></div><div class="mt-5"><label class="text-sm font-bold" for="tmdbApiKeyInput">TMDB API-Key oder Lese-Token (v4)</label><div class="flex gap-2 mt-2"><input type="password" id="tmdbApiKeyInput" autocomplete="off" spellcheck="false" placeholder="API-Key oder Token…" class="flex-grow min-w-0 bg-[#0b0e14] border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm font-mono"><button onclick="saveAndTestTmdbKey()" id="saveTmdbBtn" class="px-4 rounded-xl bg-amber-500 text-slate-950 font-bold text-sm">Testen & speichern</button></div><small class="text-slate-400 text-xs block mt-2">Der Key bleibt nur in deinem Browser gespeichert. Empfohlen: der „API-Lesezugriffstoken“ (v4) – der wird im Header statt in der URL gesendet. Feld leeren + speichern = Key löschen.</small></div><div class="mt-5 pt-4 border-t border-slate-800"><label class="text-sm font-bold" for="syncCodeField">Sync-Code</label><p class="text-xs text-slate-400 mt-1 mb-2">Synchronisiert nur den Verlauf — niemals den API-Key. Laden ersetzt den aktuellen Verlauf.</p><div class="flex gap-2"><input type="text" id="syncCodeField" class="flex-grow min-w-0 bg-[#0b0e14] border border-slate-700 rounded-xl px-3 py-2 text-xs font-mono"><button onclick="copySyncCode()" class="px-3 rounded-xl bg-slate-800 text-xs">Kopieren</button><button onclick="importSyncCode()" class="px-3 rounded-xl bg-blue-600 text-xs">Laden</button></div></div></div></div>
 <div id="toastContainer" class="fixed bottom-5 left-1/2 -translate-x-1/2 z-[60] flex flex-col items-center gap-2 pointer-events-none"></div>
 <script>
+// TMDB-Genres: Filme und Serien haben teils unterschiedliche IDs.
+// Serien haben kein "Horror" und kein "Romantik" -> nächstbeste Genres (Mystery / Soap).
 const CATEGORIES=[
 {id:'top',name:'Die beliebtesten',icon:'🏆',desc:'Die absoluten Top-Titel.',genreId:'top'},
 {id:'all',name:'Beliebt / Mix',icon:'🎲',desc:'Die besten Highlights quer durch alle Genres.',genreId:null},
@@ -58,52 +62,441 @@ const CATEGORIES=[
 {id:'comedy',name:'Komödie',icon:'😂',desc:'Zum Abschalten und Lachen.',genreId:{movie:'35',tv:'35'}},
 {id:'scifi',name:'Sci-Fi & Fantasy',icon:'🚀',desc:'Fremde Welten und Zukunftsvisionen.',genreId:{movie:'878',tv:'10765'}},
 {id:'thriller',name:'Thriller & Krimi',icon:'🕵️',desc:'Spannung und Plot-Twists.',genreId:{movie:'53',tv:'80'}},
-{id:'horror',name:'Horror',icon:'👻',desc:'Gänsehaut für den Filmabend.',genreId:{movie:'27',tv: '9648'}},
+{id:'horror',name:'Horror',icon:'👻',desc:'Gänsehaut für den Filmabend.',genreId:{movie:'27',tv:'9648'}},
 {id:'drama',name:'Drama',icon:'🎭',desc:'Tiefgründige Geschichten.',genreId:{movie:'18',tv:'18'}},
-{id:'romance',name:'Romantik',icon:'❤️',desc:'Herzklopfen und Liebesgeschichten.',genreId:{movie:'10749',tv:'10749'}},
-{id:'animation',name:'Animation / Anime',icon:'🎨',desc:'Visuelle Kunstwerke.',genreId:{movie:'16',tv:'16'}}];
+{id:'romance',name:'Romantik',icon:'❤️',desc:'Herzklopfen und Liebesgeschichten.',genreId:{movie:'10749',tv:'10766'}},
+{id:'animation',name:'Animation / Anime',icon:'🎨',desc:'Visuelle Kunstwerke – inkl. Anime.',genreId:{movie:'16',tv:'16'},allLanguages:true}];
+
+// Standard-Sprachfilter für Genre-Kategorien (Kategorien mit allLanguages:true ignorieren ihn)
+const DEFAULT_LANGUAGES='de|en|fr|es|it|sv|da|nl|no';
 
 const FALLBACK_DATABASE=[
 {id:101,type:'movie',cat:'top',title:'The Dark Knight',year:'2008',rating:9.0,poster_path:null,emoji:'🦇',vibe:'Meisterwerk',overview:'Batman gegen den Joker.'},{id:102,type:'movie',cat:'top',title:'Inception',year:'2010',rating:8.8,poster_path:null,emoji:'🌀',vibe:'Mind-Bending',overview:'Diebstahl von Geheimnissen im Traum.'},{id:103,type:'movie',cat:'action',title:'Mad Max: Fury Road',year:'2015',rating:8.1,poster_path:null,emoji:'🔥',vibe:'Adrenalin',overview:'Postapokalyptische Verfolgungsjagd.'},{id:104,type:'movie',cat:'action',title:'John Wick',year:'2014',rating:7.4,poster_path:null,emoji:'🔫',vibe:'Stylish',overview:'Ex-Auftragskiller auf Rachefeldzug.'},{id:105,type:'movie',cat:'comedy',title:'Ziemlich beste Freunde',year:'2011',rating:8.5,poster_path:null,emoji:'🤝',vibe:'Herzerwärmend',overview:'Zwei Welten treffen aufeinander.'},{id:106,type:'movie',cat:'comedy',title:'Hangover',year:'2009',rating:7.7,poster_path:null,emoji:'🍻',vibe:'Chaotisch',overview:'Junggesellenabschied in Las Vegas.'},{id:107,type:'movie',cat:'scifi',title:'Interstellar',year:'2014',rating:8.7,poster_path:null,emoji:'🌌',vibe:'Episch',overview:'Reise durch ein Wurmloch im All.'},{id:108,type:'movie',cat:'scifi',title:'Matrix',year:'1999',rating:8.7,poster_path:null,emoji:'💊',vibe:'Legendär',overview:'Entdeckung der simulierten Realität.'},{id:109,type:'movie',cat:'thriller',title:'Sieben',year:'1995',rating:8.6,poster_path:null,emoji:'📦',vibe:'Düster & Packend',overview:'Jagd auf einen Serienmörder.'},{id:110,type:'movie',cat:'horror',title:'Conjuring',year:'2013',rating:7.5,poster_path:null,emoji:'👻',vibe:'Gruselig',overview:'Paranormale Ermittlungen.'},{id:111,type:'movie',cat:'drama',title:'Fight Club',year:'1999',rating:8.8,poster_path:null,emoji:'🧼',vibe:'Kult',overview:'Gründung eines Untergrund-Clubs.'},{id:112,type:'movie',cat:'romance',title:'La La Land',year:'2016',rating:8.0,poster_path:null,emoji:'🎷',vibe:'Musikalisch',overview:'Liebe und Träume in Los Angeles.'},{id:113,type:'movie',cat:'animation',title:'Spirited Away',year:'2001',rating:8.6,poster_path:null,emoji:'🐉',vibe:'Magisch',overview:'Geheimnisvolle Geisterwelt.'},
 {id:201,type:'tv',cat:'top',title:'Breaking Bad',year:'2008',rating:9.5,poster_path:null,emoji:'🧪',vibe:'Meisterwerk',overview:'Chemielehrer wird zum Drogenboss.'},{id:202,type:'tv',cat:'top',title:'Game of Thrones',year:'2011',rating:9.2,poster_path:null,emoji:'👑',vibe:'Episch',overview:'Kampf um den Eisernen Thron.'},{id:203,type:'tv',cat:'all',title:'Stranger Things',year:'2016',rating:8.7,poster_path:null,emoji:'🚲',vibe:'80er-Nostalgie',overview:'Geheimnisvolle Vorkommnisse in Hawkins.'},{id:204,type:'tv',cat:'all',title:'Chernobyl',year:'2019',rating:9.4,poster_path:null,emoji:'☢️',vibe:'Intensiv',overview:'Aufarbeitung der Atomkatastrophe.'},{id:205,type:'tv',cat:'action',title:'The Mandalorian',year:'2019',rating:8.7,poster_path:null,emoji:'🛡️',vibe:'Sci-Fi-Action',overview:'Abenteuer eines Kopfgeldjägers.'},{id:206,type:'tv',cat:'action',title:'The Boys',year:'2019',rating:8.7,poster_path:null,emoji:'⚡',vibe:'Düster & Action',overview:'Kampf gegen korrupte Superhelden.'},{id:207,type:'tv',cat:'comedy',title:'The Office',year:'2005',rating:9.0,poster_path:null,emoji:'📎',vibe:'Zum Totlachen',overview:'Der Büroalltag.'},{id:208,type:'tv',cat:'comedy',title:'Brooklyn Nine-Nine',year:'2013',rating:8.4,poster_path:null,emoji:'👮',vibe:'Witzig & Charmant',overview:'Polizeialltag in New York.'},{id:209,type:'tv',cat:'scifi',title:'Dark',year:'2017',rating:8.7,poster_path:null,emoji:'⏳',vibe:'Komplex & Packend',overview:'Verschwinden in einer deutschen Kleinstadt.'},{id:210,type:'tv',cat:'scifi',title:'The Witcher',year:'2019',rating:8.0,poster_path:null,emoji:'⚔️',vibe:'Fantasy',overview:'Abenteuer eines Hexers.'},{id:211,type:'tv',cat:'thriller',title:'Sherlock',year:'2010',rating:9.1,poster_path:null,emoji:'🔍',vibe:'Genial',overview:'Modernisierte Abenteuer des Detektivs.'},{id:212,type:'tv',cat:'thriller',title:'Narcos',year:'2015',rating:8.8,poster_path:null,emoji:'📦',vibe:'Packend',overview:'Aufstieg der Drogenkartelle.'},{id:213,type:'tv',cat:'horror',title:'The Haunting of Hill House',year:'2018',rating:8.6,poster_path:null,emoji:'🏡',vibe:'Gänsehaut',overview:'Geister aus der Vergangenheit.'},{id:214,type:'tv',cat:'drama',title:'Succession',year:'2018',rating:8.9,poster_path:null,emoji:'💼',vibe:'Intrikat',overview:'Machtkampf um ein Medienimperium.'},{id:215,type:'tv',cat:'romance',title:'Bridgerton',year:'2020',rating:7.4,poster_path:null,emoji:'💌',vibe:'Kostümdrama',overview:'Liebesgeschichten in London.'},{id:216,type:'tv',cat:'animation',title:'Arcane',year:'2021',rating:9.0,poster_path:null,emoji:'🎨',vibe:'Meisterwerk',overview:'Konflikt zweier Städte.'}];
 
-let state={step:1,mediaType:'movie',category:null,watchedItems:[],includeWatched:false,isMuted:false,isSpinning:false,currentWinner:null,rouletteItems:[],tmdbApiKey:'',activePool:[],apiStatus:'checking',apiMessage:'',spinTimeout:null,spinInterval:null};
+const CARD_WIDTH=176, CARD_GAP=12, STRIP_LENGTH=50, TARGET_INDEX=35, SPIN_MS=4500;
 
-document.addEventListener('DOMContentLoaded',()=>{loadFromStorage();updateApiStatusUI(state.tmdbApiKey?'checking':'none',state.tmdbApiKey?'Bereit zur Prüfung':'Kein API-Key hinterlegt');updateHistoryUI();});
+let state={step:1,mediaType:'movie',category:null,watchedItems:[],includeWatched:false,isMuted:false,isSpinning:false,isLoading:false,currentWinner:null,rouletteItems:[],tmdbApiKey:'',activePool:[],apiStatus:'checking',apiMessage:'',spinTimeout:null,spinRaf:null};
+let poolRequestId=0;
 
-function loadFromStorage(){try{const h=localStorage.getItem('cinecase_history');const parsedH=h?JSON.parse(h):[];state.watchedItems=Array.isArray(parsedH)?parsedH.filter(v=>v&&typeof v==='object'&&v.id!=null&&typeof v.title==='string'):[];const i=localStorage.getItem('cinecase_include');if(i!==null)state.includeWatched=JSON.parse(i)===true;const m=localStorage.getItem('cinecase_muted');if(m!==null)state.isMuted=JSON.parse(m)===true;const k=localStorage.getItem('cinecase_tmdb');if(k)state.tmdbApiKey=k.trim();}catch(e){state.watchedItems=[]}document.getElementById('includeWatchedToggle').checked=state.includeWatched;document.getElementById('muteIcon').textContent=state.isMuted?'🔇':'🔊';document.getElementById('tmdbApiKeyInput').value=state.tmdbApiKey}
-function saveToStorage(){try{localStorage.setItem('cinecase_history',JSON.stringify(state.watchedItems));localStorage.setItem('cinecase_include',JSON.stringify(state.includeWatched));localStorage.setItem('cinecase_muted',JSON.stringify(state.isMuted));localStorage.setItem('cinecase_tmdb',state.tmdbApiKey)}catch(e){showToast('Speichern nicht möglich')}}
+document.addEventListener('DOMContentLoaded',()=>{
+  loadFromStorage();
+  updateHistoryUI();
+  if(state.tmdbApiKey){verifyKeyOnStart()}else{updateApiStatusUI('none','Kein API-Key hinterlegt')}
+});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeApiStatusModal();closeHistoryModal();closeSettingsModal()}});
+
+/* ---------- Speicher ---------- */
+function loadFromStorage(){
+  try{
+    const h=localStorage.getItem('cinecase_history');
+    const parsedH=h?JSON.parse(h):[];
+    state.watchedItems=Array.isArray(parsedH)?parsedH.filter(v=>v&&typeof v==='object'&&v.id!=null&&typeof v.title==='string'):[];
+    const i=localStorage.getItem('cinecase_include');if(i!==null)state.includeWatched=JSON.parse(i)===true;
+    const m=localStorage.getItem('cinecase_muted');if(m!==null)state.isMuted=JSON.parse(m)===true;
+    const k=localStorage.getItem('cinecase_tmdb');if(k)state.tmdbApiKey=k.trim();
+  }catch(e){state.watchedItems=[]}
+  document.getElementById('includeWatchedToggle').checked=state.includeWatched;
+  document.getElementById('muteIcon').textContent=state.isMuted?'🔇':'🔊';
+  document.getElementById('tmdbApiKeyInput').value=state.tmdbApiKey;
+}
+function saveToStorage(){
+  try{
+    localStorage.setItem('cinecase_history',JSON.stringify(state.watchedItems));
+    localStorage.setItem('cinecase_include',JSON.stringify(state.includeWatched));
+    localStorage.setItem('cinecase_muted',JSON.stringify(state.isMuted));
+    if(state.tmdbApiKey)localStorage.setItem('cinecase_tmdb',state.tmdbApiKey);
+    else localStorage.removeItem('cinecase_tmdb');
+  }catch(e){showToast('Speichern nicht möglich')}
+}
 function isItemWatched(id){return state.watchedItems.some(item=>String(item.id)===String(id))}
-function updateApiStatusUI(status,text){state.apiStatus=status;state.apiMessage=text;const dot=document.getElementById('apiStatusDot'),label=document.getElementById('apiStatusText'),mDot=document.getElementById('modalStatusDot'),mTitle=document.getElementById('modalStatusTitle'),mDesc=document.getElementById('modalStatusDesc');if(status==='live'){dot.className='w-2.5 h-2.5 rounded-full bg-emerald-400';label.textContent='LIVE TMDB';if(mDot){mDot.className='w-4 h-4 rounded-full bg-emerald-400';mTitle.textContent='Live-API aktiv';mDesc.textContent=text}}else if(status==='offline'){dot.className='w-2.5 h-2.5 rounded-full bg-amber-500';label.textContent='Datenbank offline';if(mDot){mDot.className='w-4 h-4 rounded-full bg-amber-500';mTitle.textContent='Offline-Datenbank aktiv';mDesc.textContent=text}}else{dot.className='w-2.5 h-2.5 rounded-full bg-slate-400';label.textContent='Kein API-Key';if(mDot){mDot.className='w-4 h-4 rounded-full bg-slate-400';mTitle.textContent='Kein API-Key eingetragen';mDesc.textContent='Nutze Offline-Modus oder trage einen TMDB-Key ein.'}}}
 
-let audioCtx=null;function initAudio(){if(!audioCtx){const AC=window.AudioContext||window.webkitAudioContext;if(AC)audioCtx=new AC()}if(audioCtx&&audioCtx.state==='suspended')audioCtx.resume()}function toggleMute(){state.isMuted=!state.isMuted;saveToStorage();document.getElementById('muteIcon').textContent=state.isMuted?'🔇':'🔊'}function playTick(){if(state.isMuted)return;try{initAudio();const osc=audioCtx.createOscillator(),g=audioCtx.createGain();osc.frequency.setValueAtTime(450,audioCtx.currentTime);g.gain.setValueAtTime(.1,audioCtx.currentTime);g.gain.exponentialRampToValueAtTime(.001,audioCtx.currentTime+.03);osc.connect(g);g.connect(audioCtx.destination);osc.start();osc.stop(audioCtx.currentTime+.04)}catch(e){}}
-function resetToStep1(){if(state.isSpinning)return;clearTimeout(state.spinTimeout);clearInterval(state.spinInterval);state.step=1;state.mediaType='movie';state.category=null;document.getElementById('step1Section').classList.remove('hidden');document.getElementById('step2Section').classList.add('hidden');document.getElementById('step3Section').classList.add('hidden');document.getElementById('breadcrumbBar').classList.add('hidden');if(!state.tmdbApiKey)updateApiStatusUI('none','Kein API-Key hinterlegt')}
-function selectMediaType(type){if(state.isSpinning)return;initAudio();state.mediaType=type;state.step=2;document.getElementById('step1Section').classList.add('hidden');document.getElementById('step3Section').classList.add('hidden');document.getElementById('step2Section').classList.remove('hidden');document.getElementById('breadcrumbBar').classList.remove('hidden');document.getElementById('crumbSep2').classList.add('hidden');document.getElementById('crumbCategory').classList.add('hidden');document.getElementById('crumbType').textContent=type==='movie'?'🍿 Filme':'📺 Serien';renderCategoryGrid()}
+/* ---------- TMDB ---------- */
+// v4-Lesetoken (beginnt mit "eyJ") -> Header; alter v3-Key -> URL-Parameter.
+function isV4Token(k){return typeof k==='string'&&k.startsWith('eyJ')&&k.length>60}
+function tmdbFetch(path,params={},opts={},key=state.tmdbApiKey){
+  const url=new URL('https://api.themoviedb.org/3/'+path);
+  Object.entries(params).forEach(([k,v])=>url.searchParams.set(k,v));
+  const headers={accept:'application/json'};
+  if(isV4Token(key))headers.Authorization='Bearer '+key;
+  else url.searchParams.set('api_key',key);
+  return fetch(url.toString(),{headers,cache:opts.cache||'default',referrerPolicy:'no-referrer',credentials:'omit'});
+}
+async function verifyKeyOnStart(){
+  updateApiStatusUI('checking','Prüfe API-Key…');
+  try{
+    const res=await tmdbFetch('configuration');
+    if(res.ok)updateApiStatusUI('live','API-Key gültig – Live-Daten verfügbar.');
+    else updateApiStatusUI('offline',res.status===401?'API-Key ungültig – Offline-Datenbank aktiv.':`TMDB-Fehler (HTTP ${res.status}) – Offline-Datenbank aktiv.`);
+  }catch(e){updateApiStatusUI('offline','TMDB nicht erreichbar – Offline-Datenbank aktiv.')}
+}
+function updateApiStatusUI(status,text){
+  state.apiStatus=status;state.apiMessage=text;
+  const dot=document.getElementById('apiStatusDot'),label=document.getElementById('apiStatusText'),mDot=document.getElementById('modalStatusDot'),mTitle=document.getElementById('modalStatusTitle'),mDesc=document.getElementById('modalStatusDesc');
+  const map={
+    live:{c:'bg-emerald-400',l:'LIVE TMDB',t:'Live-API aktiv'},
+    offline:{c:'bg-amber-500',l:'Offline-Daten',t:'Offline-Datenbank aktiv'},
+    checking:{c:'bg-sky-400 animate-pulse',l:'Prüfe API…',t:'Prüfe Verbindung…'},
+    none:{c:'bg-slate-400',l:'Kein API-Key',t:'Kein API-Key eingetragen'}
+  };
+  const s=map[status]||map.none;
+  dot.className='w-2.5 h-2.5 rounded-full '+s.c;
+  label.textContent=s.l;
+  mDot.className='w-4 h-4 rounded-full '+s.c;
+  mTitle.textContent=s.t;
+  mDesc.textContent=status==='none'?'Nutze den Offline-Modus oder trage in den Einstellungen einen TMDB-Key ein.':text;
+}
+
+/* ---------- Sound ---------- */
+let audioCtx=null;
+function initAudio(){if(!audioCtx){const AC=window.AudioContext||window.webkitAudioContext;if(AC)audioCtx=new AC()}if(audioCtx&&audioCtx.state==='suspended')audioCtx.resume()}
+function toggleMute(){state.isMuted=!state.isMuted;saveToStorage();document.getElementById('muteIcon').textContent=state.isMuted?'🔇':'🔊'}
+function playTick(){if(state.isMuted)return;try{initAudio();if(!audioCtx)return;const osc=audioCtx.createOscillator(),g=audioCtx.createGain();osc.frequency.setValueAtTime(450,audioCtx.currentTime);g.gain.setValueAtTime(.1,audioCtx.currentTime);g.gain.exponentialRampToValueAtTime(.001,audioCtx.currentTime+.03);osc.connect(g);g.connect(audioCtx.destination);osc.start();osc.stop(audioCtx.currentTime+.04)}catch(e){}}
+
+/* ---------- Navigation ---------- */
+function resetToStep1(){
+  if(state.isSpinning)return;
+  poolRequestId++; // laufende Ladevorgänge verwerfen
+  setPoolLoading(false);
+  state.step=1;state.mediaType='movie';state.category=null;
+  document.getElementById('step1Section').classList.remove('hidden');
+  document.getElementById('step2Section').classList.add('hidden');
+  document.getElementById('step3Section').classList.add('hidden');
+  document.getElementById('breadcrumbBar').classList.add('hidden');
+}
+function selectMediaType(type){
+  if(state.isSpinning)return;
+  initAudio();
+  poolRequestId++;
+  setPoolLoading(false);
+  state.mediaType=type;state.step=2;
+  document.getElementById('step1Section').classList.add('hidden');
+  document.getElementById('step3Section').classList.add('hidden');
+  document.getElementById('step2Section').classList.remove('hidden');
+  document.getElementById('breadcrumbBar').classList.remove('hidden');
+  document.getElementById('crumbSep2').classList.add('hidden');
+  document.getElementById('crumbCategory').classList.add('hidden');
+  document.getElementById('crumbType').textContent=type==='movie'?'🍿 Filme':'📺 Serien';
+  document.getElementById('step2Title').textContent=type==='movie'?'Welches Film-Genre?':'Welches Serien-Genre?';
+  renderCategoryGrid();
+}
 function goToStep2(){if(!state.isSpinning)selectMediaType(state.mediaType)}
-function renderCategoryGrid(){const grid=document.getElementById('categoryGrid');grid.innerHTML='';CATEGORIES.forEach(cat=>{const btn=document.createElement('button');btn.onclick=()=>selectCategory(cat);btn.className='rounded-2xl bg-[#131822] border border-slate-800 hover:border-amber-400 p-5 text-left transition-all';const icon=document.createElement('div');icon.className='text-3xl mb-3';icon.textContent=cat.icon;const h=document.createElement('h3');h.className='font-display text-xl font-bold';h.textContent=cat.name;const p=document.createElement('p');p.className='text-xs text-slate-400 mt-1';p.textContent=cat.desc;btn.append(icon,h,p);grid.appendChild(btn)})}
-async function selectCategory(cat){if(state.isSpinning)return;state.category=cat;state.step=3;document.getElementById('step2Section').classList.add('hidden');document.getElementById('step3Section').classList.remove('hidden');document.getElementById('winnerCard').classList.add('hidden');document.getElementById('crumbSep2').classList.remove('hidden');document.getElementById('crumbCategory').classList.remove('hidden');document.getElementById('crumbCategory').textContent=cat.name;document.getElementById('caseBadgeIcon').textContent=cat.icon;document.getElementById('caseTitle').textContent=cat.name;await loadMediaPool(false)}
+function renderCategoryGrid(){
+  const grid=document.getElementById('categoryGrid');grid.innerHTML='';
+  CATEGORIES.forEach(cat=>{
+    const btn=document.createElement('button');btn.onclick=()=>selectCategory(cat);
+    btn.className='rounded-2xl bg-[#131822] border border-slate-800 hover:border-amber-400 p-5 text-left transition-all';
+    const icon=document.createElement('div');icon.className='text-3xl mb-3';icon.textContent=cat.icon;
+    const h=document.createElement('h3');h.className='font-display text-xl font-bold';h.textContent=cat.name;
+    const p=document.createElement('p');p.className='text-xs text-slate-400 mt-1';p.textContent=cat.desc;
+    btn.append(icon,h,p);grid.appendChild(btn);
+  });
+}
+async function selectCategory(cat){
+  if(state.isSpinning)return;
+  state.category=cat;state.step=3;
+  state.activePool=[];state.currentWinner=null; // alten Pool sofort verwerfen
+  buildRouletteStrip([]);updatePoolUI();
+  document.getElementById('step2Section').classList.add('hidden');
+  document.getElementById('step3Section').classList.remove('hidden');
+  document.getElementById('winnerCard').classList.add('hidden');
+  document.getElementById('crumbSep2').classList.remove('hidden');
+  document.getElementById('crumbCategory').classList.remove('hidden');
+  document.getElementById('crumbCategory').textContent=cat.name;
+  document.getElementById('caseBadgeIcon').textContent=cat.icon;
+  document.getElementById('caseTitle').textContent=cat.name;
+  await loadMediaPool(false);
+}
 
-function fallbackPool(){return FALLBACK_DATABASE.filter(item=>{if(item.type!==state.mediaType)return false;if(state.category.id==='top')return item.cat==='top'||item.rating>=8.5;if(state.category.id==='all')return item.cat==='all'||item.rating>=8.5;return item.cat===state.category.id})}
+/* ---------- Pool laden ---------- */
+function fallbackPool(){
+  return FALLBACK_DATABASE.filter(item=>{
+    if(item.type!==state.mediaType)return false;
+    if(state.category.id==='top')return item.cat==='top'||item.rating>=8.5;
+    if(state.category.id==='all')return item.cat==='all'||item.rating>=8.5;
+    return item.cat===state.category.id;
+  });
+}
 function applyWatchedFilter(results){return state.includeWatched?results:results.filter(item=>!isItemWatched(item.id))}
-async function loadMediaPool(useCache=true){updateApiStatusUI(state.tmdbApiKey?'checking':'none','Prüfung der Datenquelle');let results=[],apiSuccess=false;if(state.tmdbApiKey&&state.tmdbApiKey.length>5){try{let fetched=[];const genre=state.category.genreId&&state.category.genreId!=='top'?(typeof state.category.genreId==='object'?state.category.genreId[state.mediaType]:state.category.genreId):null;for(let page=1;page<=3;page++){let url;if(state.category.id==='top'){url=`https://api.themoviedb.org/3/${state.mediaType}/top_rated?api_key=${encodeURIComponent(state.tmdbApiKey)}&language=de-DE&region=DE&page=${page}`}else if(genre){url=`https://api.themoviedb.org/3/discover/${state.mediaType}?api_key=${encodeURIComponent(state.tmdbApiKey)}&language=de-DE&region=DE&with_original_language=de|en|fr|es|it|sv|da|nl|no&with_genres=${encodeURIComponent(genre)}&sort_by=vote_count.desc&page=${page}`}else{url=`https://api.themoviedb.org/3/trending/${state.mediaType}/day?api_key=${encodeURIComponent(state.tmdbApiKey)}&language=de-DE&page=${page}`}const res=await fetch(url,{cache:useCache?'default':'no-store'});if(!res.ok)throw new Error(`HTTP ${res.status}`);const data=await res.json();if(Array.isArray(data.results))fetched=fetched.concat(data.results)}if(fetched.length>0){results=fetched.map(item=>({id:item.id,type:state.mediaType,title:item.title||item.name||'Unbekannter Titel',year:String(item.release_date||item.first_air_date||'2024').substring(0,4),rating:typeof item.vote_average==='number'?item.vote_average.toFixed(1):'7.5',poster_path:item.poster_path||null,emoji:'🎬',vibe:state.category.name,overview:item.overview||'Keine Beschreibung vorhanden.'}));apiSuccess=true}}catch(e){console.warn('TMDB API fetch failed:',e)}}if(!apiSuccess||results.length<5){updateApiStatusUI('offline','API nicht erreichbar oder kein Key – Offline-Datenbank aktiv.');results=fallbackPool();if(results.length<3)results=FALLBACK_DATABASE.filter(i=>i.type===state.mediaType)}else updateApiStatusUI('live','Live-Daten wurden erfolgreich von TMDB geladen.');results=applyWatchedFilter(results);state.activePool=results;if(state.activePool.length===0){state.activePool=fallbackPool();state.activePool=applyWatchedFilter(state.activePool)}document.getElementById('emptyPoolBanner').classList.toggle('hidden',state.activePool.length>0);document.querySelector('#poolCounter span').textContent=state.activePool.length;if(state.activePool.length===0){buildRouletteStrip([])}else buildRouletteStrip(state.activePool)}
+function setPoolLoading(loading){
+  state.isLoading=loading;
+  const btn=document.getElementById('spinBtn');
+  btn.disabled=loading||state.isSpinning;
+  document.getElementById('spinBtnText').textContent=loading?'Lade Titel…':(state.isSpinning?'Spin läuft…':'Case öffnen (Spin starten)');
+}
+function updatePoolUI(){
+  const empty=state.step===3&&!state.isLoading&&state.activePool.length===0;
+  document.getElementById('emptyPoolBanner').classList.toggle('hidden',!empty);
+  document.querySelector('#poolCounter span').textContent=state.activePool.length;
+}
+async function loadMediaPool(useCache=true){
+  if(!state.category)return;
+  const reqId=++poolRequestId;
+  const cat=state.category,type=state.mediaType;
+  setPoolLoading(true);
+  let results=[],apiSuccess=false,apiError='';
+  if(state.tmdbApiKey){
+    updateApiStatusUI('checking','Lade Daten von TMDB…');
+    try{
+      const genre=cat.genreId&&cat.genreId!=='top'?(typeof cat.genreId==='object'?cat.genreId[type]:cat.genreId):null;
+      const pages=await Promise.all([1,2,3].map(async page=>{
+        let path,params={language:'de-DE',page:String(page)};
+        if(cat.id==='top'){path=`${type}/top_rated`;params.region='DE'}
+        else if(genre){
+          path=`discover/${type}`;
+          Object.assign(params,{region:'DE',with_genres:genre,sort_by:'vote_count.desc'});
+          if(!cat.allLanguages)params.with_original_language=DEFAULT_LANGUAGES;
+        }
+        else{path=`trending/${type}/day`}
+        const res=await tmdbFetch(path,params,{cache:useCache?'default':'no-store'});
+        if(!res.ok)throw new Error(`HTTP ${res.status}`);
+        const data=await res.json();
+        return Array.isArray(data.results)?data.results:[];
+      }));
+      const seen=new Set();
+      results=pages.flat()
+        .filter(item=>item&&item.id!=null&&!seen.has(item.id)&&seen.add(item.id))
+        .map(item=>({
+          id:item.id,type,
+          title:String(item.title||item.name||'Unbekannter Titel'),
+          year:String(item.release_date||item.first_air_date||'').slice(0,4),
+          rating:Number(item.vote_average||0).toFixed(1),
+          poster_path:typeof item.poster_path==='string'&&/^\/[\w.-]+$/.test(item.poster_path)?item.poster_path:null,
+          emoji:type==='tv'?'📺':'🎬',vibe:cat.name,
+          overview:item.overview||'Keine Beschreibung vorhanden.'
+        }));
+      apiSuccess=results.length>=5;
+      if(!apiSuccess)apiError='TMDB lieferte zu wenige Titel – Offline-Datenbank aktiv.';
+    }catch(e){
+      console.warn('TMDB API fetch failed:',e);
+      apiError=String(e.message).includes('401')?'API-Key ungültig – Offline-Datenbank aktiv.':'TMDB nicht erreichbar – Offline-Datenbank aktiv.';
+    }
+  }
+  if(reqId!==poolRequestId)return; // inzwischen wurde etwas anderes gewählt
+  if(apiSuccess){updateApiStatusUI('live','Live-Daten wurden erfolgreich von TMDB geladen.')}
+  else{
+    if(state.tmdbApiKey)updateApiStatusUI('offline',apiError);
+    else updateApiStatusUI('none','Kein API-Key hinterlegt');
+    results=fallbackPool();
+    if(results.length<3)results=FALLBACK_DATABASE.filter(i=>i.type===type);
+  }
+  state.activePool=secureShuffle(applyWatchedFilter(results));
+  setPoolLoading(false);
+  updatePoolUI();
+  buildRouletteStrip(state.activePool);
+}
 
-function secureShuffle(array){const copy=[...array];for(let i=copy.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[copy[i],copy[j]]=[copy[j],copy[i]]}return copy}function shuffleCurrentPool(){if(state.isSpinning)return;if(state.activePool?.length){state.activePool=secureShuffle(state.activePool);buildRouletteStrip(state.activePool);showToast('🎲 Pool erfolgreich gemischt!')}}
-function buildRouletteStrip(pool){const track=document.getElementById('rouletteTrack');track.style.transition='none';track.style.transform='translateX(0px)';track.innerHTML='';state.rouletteItems=[];if(!pool||pool.length===0)return;for(let i=0;i<50;i++){const item=pool[Math.floor(Math.random()*pool.length)],card=document.createElement('div');card.dataset.index=String(i);card.style.width='176px';card.className='shrink-0 h-40 rounded-xl border border-slate-700 bg-[#1a2130] p-3 flex flex-col justify-between overflow-hidden relative';const top=document.createElement('div');top.className='flex justify-between text-xs text-amber-400 font-bold z-10';const rating=document.createElement('span');rating.textContent=`⭐ ${item.rating}`;const year=document.createElement('span');year.className='text-[10px] text-slate-400';year.textContent=item.year||'';top.append(rating,year);card.appendChild(top);if(item.poster_path){const img=document.createElement('img');img.src=`https://image.tmdb.org/t/p/w200${item.poster_path}`;img.alt='';img.className='absolute inset-0 w-full h-full object-cover opacity-60';img.onerror=()=>img.remove();card.appendChild(img)}else{const emoji=document.createElement('div');emoji.className='text-center text-3xl my-auto';emoji.textContent=item.emoji||'🎬';card.appendChild(emoji)}const title=document.createElement('div');title.className='font-bold text-xs text-white truncate z-10 bg-black/60 px-2 py-1 rounded text-center';title.textContent=item.title||'Unbekannter Titel';card.appendChild(title);track.appendChild(card);state.rouletteItems.push(item)}}
+/* ---------- Roulette ---------- */
+function secureShuffle(array){
+  const copy=[...array];
+  const rnd=new Uint32Array(1);
+  for(let i=copy.length-1;i>0;i--){
+    crypto.getRandomValues(rnd);
+    const j=rnd[0]%(i+1);
+    [copy[i],copy[j]]=[copy[j],copy[i]];
+  }
+  return copy;
+}
+function randomIndex(n){const r=new Uint32Array(1);crypto.getRandomValues(r);return r[0]%n}
+function shuffleCurrentPool(){
+  if(state.isSpinning||state.isLoading)return;
+  if(state.activePool?.length){state.activePool=secureShuffle(state.activePool);buildRouletteStrip(state.activePool);showToast('🎲 Pool erfolgreich gemischt!')}
+}
+function buildRouletteStrip(pool){
+  const track=document.getElementById('rouletteTrack');
+  track.style.transition='none';track.style.transform='translateX(0px)';
+  track.innerHTML='';state.rouletteItems=[];
+  if(!pool||pool.length===0)return;
+  for(let i=0;i<STRIP_LENGTH;i++){
+    const item=pool[randomIndex(pool.length)],card=document.createElement('div');
+    card.dataset.index=String(i);card.style.width=CARD_WIDTH+'px';
+    card.className='shrink-0 h-40 rounded-xl border border-slate-700 bg-[#1a2130] p-3 flex flex-col justify-between overflow-hidden relative';
+    const top=document.createElement('div');top.className='flex justify-between text-xs text-amber-400 font-bold z-10';
+    const rating=document.createElement('span');rating.textContent=`⭐ ${item.rating}`;
+    const year=document.createElement('span');year.className='text-[10px] text-slate-400';year.textContent=item.year||'';
+    top.append(rating,year);card.appendChild(top);
+    if(item.poster_path){
+      const img=document.createElement('img');img.alt='';img.loading='lazy';
+      img.className='absolute inset-0 w-full h-full object-cover opacity-60';
+      img.onerror=()=>img.remove();
+      img.src=`https://image.tmdb.org/t/p/w200${item.poster_path}`;
+      card.appendChild(img);
+    }else{
+      const emoji=document.createElement('div');emoji.className='text-center text-3xl my-auto';emoji.textContent=item.emoji||'🎬';card.appendChild(emoji);
+    }
+    const title=document.createElement('div');title.className='font-bold text-xs text-white truncate z-10 bg-black/60 px-2 py-1 rounded text-center';title.textContent=item.title||'Unbekannter Titel';
+    card.appendChild(title);track.appendChild(card);state.rouletteItems.push(item);
+  }
+}
+async function startSpin(){
+  if(state.isSpinning||state.isLoading)return;
+  if(!state.activePool||state.activePool.length===0){await loadMediaPool(false)}
+  if(!state.activePool||state.activePool.length===0){showToast('Keine Titel verfügbar');return}
+  initAudio();
+  state.isSpinning=true;
+  setPoolLoading(false);
+  document.getElementById('winnerCard').classList.add('hidden');
+  buildRouletteStrip(state.activePool);
+  const track=document.getElementById('rouletteTrack'),viewport=document.getElementById('rouletteViewport');
+  await new Promise(r=>requestAnimationFrame(r));
+  const targetCard=track.children[TARGET_INDEX];
+  const winner=state.rouletteItems[TARGET_INDEX];
+  state.currentWinner=winner;
+  const viewportCenter=viewport.offsetWidth/2;
+  const cardCenter=targetCard.offsetLeft+targetCard.offsetWidth/2;
+  // Zufälliger Versatz innerhalb der Gewinnerkarte -> Nadel landet nicht immer exakt mittig
+  const jitter=(Math.random()-.5)*targetCard.offsetWidth*.7;
+  const offset=cardCenter-viewportCenter+jitter;
+  void track.offsetWidth; // Reset der Position erzwingen, bevor die Animation startet
+  track.style.transition=`transform ${SPIN_MS}ms cubic-bezier(.08,.85,.14,1)`;
+  track.style.transform=`translateX(${-offset}px)`;
 
-async function startSpin(){if(state.isSpinning)return;if(!state.activePool||state.activePool.length===0){await loadMediaPool(false)}if(!state.activePool||state.activePool.length===0){showToast('Keine Titel verfügbar');return}state.isSpinning=true;document.getElementById('winnerCard').classList.add('hidden');document.getElementById('spinBtn').disabled=true;document.getElementById('spinBtnText').textContent='Spin läuft…';buildRouletteStrip(state.activePool);const track=document.getElementById('rouletteTrack');await new Promise(r=>requestAnimationFrame(r));const targetIndex=35;const targetCard=track.children[targetIndex];const viewport=document.getElementById('rouletteViewport');const winner=state.rouletteItems[targetIndex];state.currentWinner=winner;const viewportCenter=viewport.offsetWidth/2;const cardCenter=targetCard.offsetLeft+(targetCard.offsetWidth/2);const offset=cardCenter-viewportCenter;track.style.transition='transform 4.5s cubic-bezier(.08,.85,.14,1)';track.style.transform=`translateX(${-offset}px)`;let elapsed=0;clearInterval(state.spinInterval);state.spinInterval=setInterval(()=>{playTick();elapsed+=150;if(elapsed>=4400)clearInterval(state.spinInterval)},150);clearTimeout(state.spinTimeout);state.spinTimeout=setTimeout(()=>{state.isSpinning=false;document.getElementById('spinBtn').disabled=false;document.getElementById('spinBtnText').textContent='Case öffnen (Spin starten)';revealWinner(winner);try{confetti({particleCount:80,spread:70,origin:{y:.6}})}catch(e){}},4600)}
+  // Tick-Sound genau dann, wenn eine Karte die Nadel passiert (wird beim Abbremsen langsamer)
+  const startPad=track.children[0].offsetLeft,step=CARD_WIDTH+CARD_GAP;let lastIdx=-1;
+  cancelAnimationFrame(state.spinRaf);
+  const loop=()=>{
+    if(!state.isSpinning)return;
+    try{
+      const x=new DOMMatrixReadOnly(getComputedStyle(track).transform).m41;
+      const idx=Math.floor((viewportCenter-x-startPad)/step);
+      if(idx!==lastIdx){if(lastIdx!==-1)playTick();lastIdx=idx}
+    }catch(e){}
+    state.spinRaf=requestAnimationFrame(loop);
+  };
+  state.spinRaf=requestAnimationFrame(loop);
 
-function revealWinner(item){document.getElementById('winnerTitle').textContent=item.title;document.getElementById('winnerVibe').textContent=`✨ ${item.vibe||''}`;document.getElementById('winnerDesc').textContent=item.overview||'';document.getElementById('winnerYear').textContent=item.year||'';document.getElementById('winnerRating').textContent=item.rating||'';document.getElementById('winnerMediaTypeBadge').textContent=item.type==='tv'?'Serie':'Film';const posterImg=document.getElementById('winnerPosterImg'),emoji=document.getElementById('winnerEmoji');if(item.poster_path){posterImg.src=`https://image.tmdb.org/t/p/w300${item.poster_path}`;posterImg.classList.remove('hidden');emoji.classList.add('hidden');posterImg.onerror=()=>{posterImg.classList.add('hidden');emoji.classList.remove('hidden')}}else{posterImg.classList.add('hidden');emoji.classList.remove('hidden');emoji.textContent=item.emoji||'🎬'}document.getElementById('winnerCard').classList.remove('hidden')}
+  clearTimeout(state.spinTimeout);
+  state.spinTimeout=setTimeout(()=>{
+    state.isSpinning=false;
+    cancelAnimationFrame(state.spinRaf);
+    setPoolLoading(false);
+    revealWinner(winner);
+    try{confetti({particleCount:80,spread:70,origin:{y:.6}})}catch(e){}
+  },SPIN_MS+100);
+}
+function revealWinner(item){
+  document.getElementById('winnerTitle').textContent=item.title;
+  document.getElementById('winnerVibe').textContent=`✨ ${item.vibe||''}`;
+  document.getElementById('winnerDesc').textContent=item.overview||'';
+  document.getElementById('winnerYear').textContent=item.year||'–';
+  document.getElementById('winnerRating').textContent=item.rating||'–';
+  document.getElementById('winnerMediaTypeBadge').textContent=item.type==='tv'?'Serie':'Film';
+  const posterImg=document.getElementById('winnerPosterImg'),emoji=document.getElementById('winnerEmoji');
+  emoji.textContent=item.emoji||'🎬';
+  if(item.poster_path){
+    posterImg.onerror=()=>{posterImg.classList.add('hidden');emoji.classList.remove('hidden')};
+    posterImg.src=`https://image.tmdb.org/t/p/w300${item.poster_path}`;
+    posterImg.classList.remove('hidden');emoji.classList.add('hidden');
+  }else{posterImg.removeAttribute('src');posterImg.classList.add('hidden');emoji.classList.remove('hidden')}
+  updateMarkWatchedBtn();
+  document.getElementById('winnerCard').classList.remove('hidden');
+}
+function updateMarkWatchedBtn(){
+  const watched=state.currentWinner&&isItemWatched(state.currentWinner.id);
+  document.getElementById('markWatchedText').textContent=watched?'✓ Bereits gesehen':'Als gesehen markieren';
+}
+
+/* ---------- Verlauf ---------- */
 function toggleIncludeWatched(){state.includeWatched=document.getElementById('includeWatchedToggle').checked;saveToStorage();if(state.step===3&&state.category)loadMediaPool(true)}
-function markCurrentAsWatched(){if(!state.currentWinner)return;if(!isItemWatched(state.currentWinner.id)){state.watchedItems.unshift({...state.currentWinner,overview:String(state.currentWinner.overview||'').slice(0,500),title:String(state.currentWinner.title||'Unbekannter Titel').slice(0,200)});saveToStorage();updateHistoryUI();showToast('Als gesehen markiert!')}else showToast('Bereits als gesehen gespeichert')}
-function updateHistoryUI(){const badge=document.getElementById('historyBadge'),total=document.getElementById('historyTotalText'),list=document.getElementById('historyList');badge.textContent=state.watchedItems.length;total.textContent=`${state.watchedItems.length} Titel`;list.innerHTML='';if(state.watchedItems.length===0){const p=document.createElement('p');p.className='text-slate-400 text-xs text-center py-6';p.textContent='Noch nichts gesehen.';list.appendChild(p)}state.watchedItems.forEach(item=>{const row=document.createElement('div');row.className='flex justify-between items-center p-2.5 bg-[#1a2130] rounded-xl text-xs text-white';const title=document.createElement('span');title.textContent=`🎬 ${item.title||'Unbekannter Titel'}`;const btn=document.createElement('button');btn.textContent='Freigeben';btn.className='text-red-400 font-bold';btn.onclick=()=>removeFromHistory(item.id);row.append(title,btn);list.appendChild(row)})}
-function removeFromHistory(id){state.watchedItems=state.watchedItems.filter(i=>String(i.id)!==String(id));saveToStorage();updateHistoryUI();if(state.step===3&&state.category)loadMediaPool(true)}
-function clearAllHistory(){state.watchedItems=[];saveToStorage();updateHistoryUI();if(state.step===3&&state.category)loadMediaPool(true)}
-function openApiStatusModal(){document.getElementById('apiStatusModal').classList.remove('hidden');document.getElementById('apiStatusModal').classList.add('flex')}function closeApiStatusModal(){document.getElementById('apiStatusModal').classList.add('hidden');document.getElementById('apiStatusModal').classList.remove('flex')}function openHistoryModal(){updateHistoryUI();document.getElementById('historyModal').classList.remove('hidden')}function closeHistoryModal(){document.getElementById('historyModal').classList.add('hidden')}function openSettingsModal(){document.getElementById('settingsModal').classList.remove('hidden');document.getElementById('settingsModal').classList.add('flex')}function closeSettingsModal(){document.getElementById('settingsModal').classList.add('hidden');document.getElementById('settingsModal').classList.remove('flex')}
+function markCurrentAsWatched(){
+  if(!state.currentWinner)return;
+  if(isItemWatched(state.currentWinner.id)){showToast('Bereits als gesehen gespeichert');return}
+  const w=state.currentWinner;
+  state.watchedItems.unshift({...w,overview:String(w.overview||'').slice(0,500),title:String(w.title||'Unbekannter Titel').slice(0,200)});
+  saveToStorage();updateHistoryUI();updateMarkWatchedBtn();
+  // Direkt aus dem aktuellen Pool entfernen, damit er nicht gleich wieder gezogen wird
+  if(!state.includeWatched){state.activePool=state.activePool.filter(i=>String(i.id)!==String(w.id));updatePoolUI()}
+  showToast('Als gesehen markiert!');
+}
+function updateHistoryUI(){
+  const badge=document.getElementById('historyBadge'),total=document.getElementById('historyTotalText'),list=document.getElementById('historyList');
+  badge.textContent=state.watchedItems.length;total.textContent=`${state.watchedItems.length} Titel`;list.innerHTML='';
+  if(state.watchedItems.length===0){const p=document.createElement('p');p.className='text-slate-400 text-xs text-center py-6';p.textContent='Noch nichts gesehen.';list.appendChild(p)}
+  state.watchedItems.forEach(item=>{
+    const row=document.createElement('div');row.className='flex justify-between items-center gap-3 p-2.5 bg-[#1a2130] rounded-xl text-xs text-white';
+    const title=document.createElement('span');title.className='truncate';title.textContent=`${item.type==='tv'?'📺':'🎬'} ${item.title||'Unbekannter Titel'}`;
+    const btn=document.createElement('button');btn.textContent='Freigeben';btn.className='text-red-400 font-bold shrink-0';btn.onclick=()=>removeFromHistory(item.id);
+    row.append(title,btn);list.appendChild(row);
+  });
+}
+function removeFromHistory(id){state.watchedItems=state.watchedItems.filter(i=>String(i.id)!==String(id));saveToStorage();updateHistoryUI();updateMarkWatchedBtn();if(state.step===3&&state.category&&!state.isSpinning)loadMediaPool(true)}
+function clearAllHistory(){
+  if(state.watchedItems.length===0)return;
+  if(!confirm('Wirklich den gesamten Verlauf löschen?'))return;
+  state.watchedItems=[];saveToStorage();updateHistoryUI();updateMarkWatchedBtn();
+  if(state.step===3&&state.category&&!state.isSpinning)loadMediaPool(true);
+}
 
-async function saveAndTestTmdbKey(){const input=document.getElementById('tmdbApiKeyInput');state.tmdbApiKey=input.value.trim();if(!state.tmdbApiKey){saveToStorage();updateApiStatusUI('none','Kein API-Key hinterlegt');showToast('Key gelöscht');closeSettingsModal();return}const btn=document.getElementById('saveTmdbBtn');btn.disabled=true;btn.textContent='Teste…';try{const res=await fetch(`https://api.themoviedb.org/3/movie/top_rated?api_key=${encodeURIComponent(state.tmdbApiKey)}&language=de-DE&page=1`);if(!res.ok)throw new Error(`HTTP ${res.status}`);await res.json();saveToStorage();updateApiStatusUI('live','API-Key erfolgreich getestet.');showToast('API-Key gespeichert & getestet!')}catch(e){saveToStorage();updateApiStatusUI('offline','API-Key ungültig oder TMDB nicht erreichbar.');showToast('Key konnte nicht bestätigt werden')}finally{btn.disabled=false;btn.textContent='Testen & speichern';closeSettingsModal();if(state.step===3&&state.category)loadMediaPool(false)}}
-function utf8ToBase64(value){const bytes=new TextEncoder().encode(value);let binary='';bytes.forEach(b=>binary+=String.fromCharCode(b));return btoa(binary)}function base64ToUtf8(value){const binary=atob(value);const bytes=Uint8Array.from(binary,c=>c.charCodeAt(0));return new TextDecoder().decode(bytes)}
-function copySyncCode(){const code=utf8ToBase64(JSON.stringify({v:1,w:state.watchedItems.map(item=>({id:String(item.id),type:item.type==='tv'?'tv':'movie',title:String(item.title||'').slice(0,200),year:String(item.year||''),rating:String(item.rating||''),poster_path:null,emoji:item.emoji||'🎬',vibe:item.vibe||'',overview:String(item.overview||'').slice(0,500)}))}));document.getElementById('syncCodeField').value=code;if(navigator.clipboard?.writeText)navigator.clipboard.writeText(code);showToast('Sync-Code kopiert!')}
-function importSyncCode(){try{const raw=document.getElementById('syncCodeField').value.trim();if(!raw)throw new Error('leer');const data=JSON.parse(base64ToUtf8(raw));if(!Array.isArray(data.w)||data.w.length>1000)throw new Error('Format ungültig');const normalized=data.w.filter(item=>item&&item.id!=null&&typeof item.title==='string').slice(0,1000).map(item=>({id:String(item.id).slice(0,100),type:item.type==='tv'?'tv':'movie',title:item.title.slice(0,200),year:String(item.year||'').replace(/[^0-9]/g,'').slice(0,4),rating:typeof item.rating==='number'?item.rating:String(item.rating||'').replace(/[^0-9.]/g,'').slice(0,4),poster_path:null,emoji:'🎬',vibe:String(item.vibe||'').slice(0,100),overview:String(item.overview||'').slice(0,500)}));state.watchedItems=normalized;saveToStorage();updateHistoryUI();showToast('Erfolgreich geladen!');if(state.step===3&&state.category)loadMediaPool(true)}catch(e){showToast('Ungültiger oder beschädigter Sync-Code')}}
+/* ---------- Modals ---------- */
+function openApiStatusModal(){const m=document.getElementById('apiStatusModal');m.classList.remove('hidden');m.classList.add('flex')}
+function closeApiStatusModal(){const m=document.getElementById('apiStatusModal');m.classList.add('hidden');m.classList.remove('flex')}
+function openHistoryModal(){updateHistoryUI();document.getElementById('historyModal').classList.remove('hidden')}
+function closeHistoryModal(){document.getElementById('historyModal').classList.add('hidden')}
+function openSettingsModal(){document.getElementById('tmdbApiKeyInput').value=state.tmdbApiKey;const m=document.getElementById('settingsModal');m.classList.remove('hidden');m.classList.add('flex')}
+function closeSettingsModal(){const m=document.getElementById('settingsModal');m.classList.add('hidden');m.classList.remove('flex')}
+
+/* ---------- Einstellungen ---------- */
+async function saveAndTestTmdbKey(){
+  const input=document.getElementById('tmdbApiKeyInput');
+  const candidate=input.value.trim();
+  if(!candidate){
+    state.tmdbApiKey='';saveToStorage();updateApiStatusUI('none','Kein API-Key hinterlegt');
+    showToast('Key gelöscht');closeSettingsModal();
+    if(state.step===3&&state.category&&!state.isSpinning)loadMediaPool(false);
+    return;
+  }
+  const btn=document.getElementById('saveTmdbBtn');btn.disabled=true;btn.textContent='Teste…';
+  try{
+    const res=await tmdbFetch('configuration',{},{},candidate);
+    if(res.status===401){showToast('Key ungültig – nicht gespeichert');return} // Modal bleibt offen
+    if(!res.ok)throw new Error(`HTTP ${res.status}`);
+    state.tmdbApiKey=candidate;saveToStorage();
+    updateApiStatusUI('live','API-Key erfolgreich getestet.');
+    showToast('API-Key gespeichert & getestet!');
+    closeSettingsModal();
+    if(state.step===3&&state.category&&!state.isSpinning)loadMediaPool(false);
+  }catch(e){
+    // Netzwerkproblem: Key trotzdem speichern, kann später funktionieren
+    state.tmdbApiKey=candidate;saveToStorage();
+    updateApiStatusUI('offline','TMDB nicht erreichbar – Key gespeichert, Offline-Datenbank aktiv.');
+    showToast('TMDB nicht erreichbar – Key gespeichert');
+    closeSettingsModal();
+  }finally{btn.disabled=false;btn.textContent='Testen & speichern'}
+}
+
+/* ---------- Sync-Code ---------- */
+function utf8ToBase64(value){const bytes=new TextEncoder().encode(value);let binary='';bytes.forEach(b=>binary+=String.fromCharCode(b));return btoa(binary)}
+function base64ToUtf8(value){const binary=atob(value);const bytes=Uint8Array.from(binary,c=>c.charCodeAt(0));return new TextDecoder().decode(bytes)}
+function copySyncCode(){
+  const code=utf8ToBase64(JSON.stringify({v:1,w:state.watchedItems.map(item=>({id:String(item.id),type:item.type==='tv'?'tv':'movie',title:String(item.title||'').slice(0,200),year:String(item.year||''),rating:String(item.rating||''),vibe:String(item.vibe||'').slice(0,100),overview:String(item.overview||'').slice(0,500)}))}));
+  const field=document.getElementById('syncCodeField');field.value=code;
+  if(navigator.clipboard?.writeText){
+    navigator.clipboard.writeText(code).then(()=>showToast('Sync-Code kopiert!')).catch(()=>{field.select();showToast('Bitte Code im Feld manuell kopieren')});
+  }else{field.select();showToast('Bitte Code im Feld manuell kopieren')}
+}
+function importSyncCode(){
+  try{
+    const raw=document.getElementById('syncCodeField').value.trim();
+    if(!raw)throw new Error('leer');
+    if(raw.length>2000000)throw new Error('zu groß');
+    const data=JSON.parse(base64ToUtf8(raw));
+    if(!data||!Array.isArray(data.w)||data.w.length>1000)throw new Error('Format ungültig');
+    const normalized=data.w.filter(item=>item&&item.id!=null&&typeof item.title==='string').slice(0,1000).map(item=>({
+      id:String(item.id).slice(0,100),
+      type:item.type==='tv'?'tv':'movie',
+      title:item.title.slice(0,200),
+      year:String(item.year||'').replace(/[^0-9]/g,'').slice(0,4),
+      rating:String(item.rating??'').replace(/[^0-9.]/g,'').slice(0,4),
+      poster_path:null,emoji:item.type==='tv'?'📺':'🎬',
+      vibe:String(item.vibe||'').slice(0,100),
+      overview:String(item.overview||'').slice(0,500)
+    }));
+    if(state.watchedItems.length&&!confirm(`Aktuellen Verlauf (${state.watchedItems.length} Titel) durch ${normalized.length} importierte Titel ersetzen?`))return;
+    state.watchedItems=normalized;saveToStorage();updateHistoryUI();updateMarkWatchedBtn();
+    showToast('Erfolgreich geladen!');
+    if(state.step===3&&state.category&&!state.isSpinning)loadMediaPool(true);
+  }catch(e){showToast('Ungültiger oder beschädigter Sync-Code')}
+}
 function enableWatchedAndSpin(){state.includeWatched=true;document.getElementById('includeWatchedToggle').checked=true;saveToStorage();loadMediaPool(true).then(()=>startSpin())}
 function showToast(msg){const c=document.getElementById('toastContainer'),toast=document.createElement('div');toast.className='px-3 py-2 bg-[#1a2130] text-white text-xs rounded-xl shadow-xl border border-slate-700';toast.textContent=msg;c.appendChild(toast);setTimeout(()=>toast.remove(),2500)}
 </script>
