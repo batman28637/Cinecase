@@ -52,6 +52,8 @@ button:disabled{opacity:.6;cursor:not-allowed}
 <div id="historyModal" class="fixed inset-0 z-50 hidden"><div onclick="closeHistoryModal()" class="absolute inset-0 bg-black/75"></div><div class="absolute right-0 top-0 bottom-0 w-full max-w-md bg-[#131822] border-l border-slate-800 flex flex-col z-10"><div class="p-5 border-b border-slate-800 flex justify-between"><h3 class="font-display text-2xl font-extrabold">📜 Bereits gesehen</h3><button onclick="closeHistoryModal()" class="w-9 h-9 rounded-xl bg-slate-800">✕</button></div><div id="historyList" class="flex-grow overflow-y-auto p-4 space-y-2.5"></div><div class="p-4 border-t border-slate-800 flex justify-between"><span id="historyTotalText" class="text-xs text-slate-400">0 Titel</span><button onclick="clearAllHistory()" class="text-xs text-red-400">Alle löschen</button></div></div></div>
 <div id="settingsModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4"><div onclick="closeSettingsModal()" class="absolute inset-0 bg-black/80"></div><div class="relative w-full max-w-xl max-h-[90vh] overflow-y-auto rounded-3xl bg-[#131822] border border-slate-700 p-6 z-10"><div class="flex justify-between border-b border-slate-800 pb-4"><h3 class="font-display text-2xl font-extrabold">⚙️ Einstellungen</h3><button onclick="closeSettingsModal()" class="w-9 h-9 rounded-xl bg-slate-800">✕</button></div><div class="mt-5"><label class="text-sm font-bold" for="tmdbApiKeyInput">TMDB API-Key oder Lese-Token (v4)</label><div class="flex gap-2 mt-2"><input type="password" id="tmdbApiKeyInput" autocomplete="off" spellcheck="false" placeholder="API-Key oder Token…" class="flex-grow min-w-0 bg-[#0b0e14] border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm font-mono"><button onclick="saveAndTestTmdbKey()" id="saveTmdbBtn" class="px-4 rounded-xl bg-amber-500 text-slate-950 font-bold text-sm">Testen & speichern</button></div><small class="text-slate-400 text-xs block mt-2">Der Key bleibt nur in deinem Browser gespeichert. Empfohlen: der „API-Lesezugriffstoken“ (v4) – der wird im Header statt in der URL gesendet. Feld leeren + speichern = Key löschen.</small></div><div class="mt-5 pt-4 border-t border-slate-800"><label class="text-sm font-bold" for="syncCodeField">Sync-Code</label><p class="text-xs text-slate-400 mt-1 mb-2">Synchronisiert nur den Verlauf — niemals den API-Key. Laden ersetzt den aktuellen Verlauf.</p><div class="flex gap-2"><input type="text" id="syncCodeField" class="flex-grow min-w-0 bg-[#0b0e14] border border-slate-700 rounded-xl px-3 py-2 text-xs font-mono"><button onclick="copySyncCode()" class="px-3 rounded-xl bg-slate-800 text-xs">Kopieren</button><button onclick="importSyncCode()" class="px-3 rounded-xl bg-blue-600 text-xs">Laden</button></div></div></div></div>
 <div id="toastContainer" class="fixed bottom-5 left-1/2 -translate-x-1/2 z-[60] flex flex-col items-center gap-2 pointer-events-none"></div>
+<!-- Offline-Datenbank (muss im selben Ordner wie index.html liegen) -->
+<script src="offline-db.js"></script>
 <script>
 // TMDB-Genres: Filme und Serien haben teils unterschiedliche IDs.
 // Serien haben kein "Horror" und kein "Romantik" -> nächstbeste Genres (Mystery / Soap).
@@ -70,9 +72,8 @@ const CATEGORIES=[
 // Standard-Sprachfilter für Genre-Kategorien (Kategorien mit allLanguages:true ignorieren ihn)
 const DEFAULT_LANGUAGES='de|en|fr|es|it|sv|da|nl|no';
 
-const FALLBACK_DATABASE=[
-{id:101,type:'movie',cat:'top',title:'The Dark Knight',year:'2008',rating:9.0,poster_path:null,emoji:'🦇',vibe:'Meisterwerk',overview:'Batman gegen den Joker.'},{id:102,type:'movie',cat:'top',title:'Inception',year:'2010',rating:8.8,poster_path:null,emoji:'🌀',vibe:'Mind-Bending',overview:'Diebstahl von Geheimnissen im Traum.'},{id:103,type:'movie',cat:'action',title:'Mad Max: Fury Road',year:'2015',rating:8.1,poster_path:null,emoji:'🔥',vibe:'Adrenalin',overview:'Postapokalyptische Verfolgungsjagd.'},{id:104,type:'movie',cat:'action',title:'John Wick',year:'2014',rating:7.4,poster_path:null,emoji:'🔫',vibe:'Stylish',overview:'Ex-Auftragskiller auf Rachefeldzug.'},{id:105,type:'movie',cat:'comedy',title:'Ziemlich beste Freunde',year:'2011',rating:8.5,poster_path:null,emoji:'🤝',vibe:'Herzerwärmend',overview:'Zwei Welten treffen aufeinander.'},{id:106,type:'movie',cat:'comedy',title:'Hangover',year:'2009',rating:7.7,poster_path:null,emoji:'🍻',vibe:'Chaotisch',overview:'Junggesellenabschied in Las Vegas.'},{id:107,type:'movie',cat:'scifi',title:'Interstellar',year:'2014',rating:8.7,poster_path:null,emoji:'🌌',vibe:'Episch',overview:'Reise durch ein Wurmloch im All.'},{id:108,type:'movie',cat:'scifi',title:'Matrix',year:'1999',rating:8.7,poster_path:null,emoji:'💊',vibe:'Legendär',overview:'Entdeckung der simulierten Realität.'},{id:109,type:'movie',cat:'thriller',title:'Sieben',year:'1995',rating:8.6,poster_path:null,emoji:'📦',vibe:'Düster & Packend',overview:'Jagd auf einen Serienmörder.'},{id:110,type:'movie',cat:'horror',title:'Conjuring',year:'2013',rating:7.5,poster_path:null,emoji:'👻',vibe:'Gruselig',overview:'Paranormale Ermittlungen.'},{id:111,type:'movie',cat:'drama',title:'Fight Club',year:'1999',rating:8.8,poster_path:null,emoji:'🧼',vibe:'Kult',overview:'Gründung eines Untergrund-Clubs.'},{id:112,type:'movie',cat:'romance',title:'La La Land',year:'2016',rating:8.0,poster_path:null,emoji:'🎷',vibe:'Musikalisch',overview:'Liebe und Träume in Los Angeles.'},{id:113,type:'movie',cat:'animation',title:'Spirited Away',year:'2001',rating:8.6,poster_path:null,emoji:'🐉',vibe:'Magisch',overview:'Geheimnisvolle Geisterwelt.'},
-{id:201,type:'tv',cat:'top',title:'Breaking Bad',year:'2008',rating:9.5,poster_path:null,emoji:'🧪',vibe:'Meisterwerk',overview:'Chemielehrer wird zum Drogenboss.'},{id:202,type:'tv',cat:'top',title:'Game of Thrones',year:'2011',rating:9.2,poster_path:null,emoji:'👑',vibe:'Episch',overview:'Kampf um den Eisernen Thron.'},{id:203,type:'tv',cat:'all',title:'Stranger Things',year:'2016',rating:8.7,poster_path:null,emoji:'🚲',vibe:'80er-Nostalgie',overview:'Geheimnisvolle Vorkommnisse in Hawkins.'},{id:204,type:'tv',cat:'all',title:'Chernobyl',year:'2019',rating:9.4,poster_path:null,emoji:'☢️',vibe:'Intensiv',overview:'Aufarbeitung der Atomkatastrophe.'},{id:205,type:'tv',cat:'action',title:'The Mandalorian',year:'2019',rating:8.7,poster_path:null,emoji:'🛡️',vibe:'Sci-Fi-Action',overview:'Abenteuer eines Kopfgeldjägers.'},{id:206,type:'tv',cat:'action',title:'The Boys',year:'2019',rating:8.7,poster_path:null,emoji:'⚡',vibe:'Düster & Action',overview:'Kampf gegen korrupte Superhelden.'},{id:207,type:'tv',cat:'comedy',title:'The Office',year:'2005',rating:9.0,poster_path:null,emoji:'📎',vibe:'Zum Totlachen',overview:'Der Büroalltag.'},{id:208,type:'tv',cat:'comedy',title:'Brooklyn Nine-Nine',year:'2013',rating:8.4,poster_path:null,emoji:'👮',vibe:'Witzig & Charmant',overview:'Polizeialltag in New York.'},{id:209,type:'tv',cat:'scifi',title:'Dark',year:'2017',rating:8.7,poster_path:null,emoji:'⏳',vibe:'Komplex & Packend',overview:'Verschwinden in einer deutschen Kleinstadt.'},{id:210,type:'tv',cat:'scifi',title:'The Witcher',year:'2019',rating:8.0,poster_path:null,emoji:'⚔️',vibe:'Fantasy',overview:'Abenteuer eines Hexers.'},{id:211,type:'tv',cat:'thriller',title:'Sherlock',year:'2010',rating:9.1,poster_path:null,emoji:'🔍',vibe:'Genial',overview:'Modernisierte Abenteuer des Detektivs.'},{id:212,type:'tv',cat:'thriller',title:'Narcos',year:'2015',rating:8.8,poster_path:null,emoji:'📦',vibe:'Packend',overview:'Aufstieg der Drogenkartelle.'},{id:213,type:'tv',cat:'horror',title:'The Haunting of Hill House',year:'2018',rating:8.6,poster_path:null,emoji:'🏡',vibe:'Gänsehaut',overview:'Geister aus der Vergangenheit.'},{id:214,type:'tv',cat:'drama',title:'Succession',year:'2018',rating:8.9,poster_path:null,emoji:'💼',vibe:'Intrikat',overview:'Machtkampf um ein Medienimperium.'},{id:215,type:'tv',cat:'romance',title:'Bridgerton',year:'2020',rating:7.4,poster_path:null,emoji:'💌',vibe:'Kostümdrama',overview:'Liebesgeschichten in London.'},{id:216,type:'tv',cat:'animation',title:'Arcane',year:'2021',rating:9.0,poster_path:null,emoji:'🎨',vibe:'Meisterwerk',overview:'Konflikt zweier Städte.'}];
+// Offline-Datenbank kommt aus offline-db.js (falls die Datei fehlt: leere Liste)
+const FALLBACK_DATABASE=Array.isArray(window.CINECASE_OFFLINE_DB)?window.CINECASE_OFFLINE_DB:[];
 
 const CARD_WIDTH=176, CARD_GAP=12, STRIP_LENGTH=50, TARGET_INDEX=35, SPIN_MS=4500;
 
@@ -210,11 +211,15 @@ async function selectCategory(cat){
 
 /* ---------- Pool laden ---------- */
 function fallbackPool(){
+  const seen=new Set();
   return FALLBACK_DATABASE.filter(item=>{
     if(item.type!==state.mediaType)return false;
-    if(state.category.id==='top')return item.cat==='top'||item.rating>=8.5;
-    if(state.category.id==='all')return item.cat==='all'||item.rating>=8.5;
-    return item.cat===state.category.id;
+    let ok;
+    if(state.category.id==='top')ok=item.cat==='top'||Number(item.rating)>=8.5;
+    else if(state.category.id==='all')ok=true; // Mix: quer durch alle Genres
+    else ok=item.cat===state.category.id;
+    if(!ok||seen.has(item.id))return false; // Titel, die in zwei Genres stehen, nur einmal
+    seen.add(item.id);return true;
   });
 }
 function applyWatchedFilter(results){return state.includeWatched?results:results.filter(item=>!isItemWatched(item.id))}
@@ -277,8 +282,9 @@ async function loadMediaPool(useCache=true){
   else{
     if(state.tmdbApiKey)updateApiStatusUI('offline',apiError);
     else updateApiStatusUI('none','Kein API-Key hinterlegt');
+    // Nur Titel des gewählten Genres – lieber wenige passende als viele unpassende
     results=fallbackPool();
-    if(results.length<3)results=FALLBACK_DATABASE.filter(i=>i.type===type);
+    if(FALLBACK_DATABASE.length===0)showToast('offline-db.js nicht gefunden – bitte neben index.html legen');
   }
   state.activePool=secureShuffle(applyWatchedFilter(results));
   setPoolLoading(false);
